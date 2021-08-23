@@ -52,20 +52,6 @@
           </v-row>
           <v-row>
             <v-col>
-              <!--              <v-tabs-items v-model="tab">-->
-              <!--                <v-tab-item-->
-              <!--                    v-for="item in 5"-->
-              <!--                    :key="item"-->
-              <!--                >-->
-              <!--                  <v-card flat>-->
-              <!--                    <keep-alive>-->
-              <!--                      <component v-bind:is="'ReviewTable'"></component>-->
-
-              <!--                    </keep-alive>-->
-              <!--                  </v-card>-->
-              <!--                </v-tab-item>-->
-              <!--              </v-tabs-items>-->
-
               <div class="ag-theme-material">
                 <!--                <button @click="getSelectedRows()">Get Selected Rows</button>-->
                 <ag-grid-vue
@@ -102,22 +88,12 @@
 
 <script>
 import { mapState } from "vuex";
-// import ReviewTable from "@/components/ReviewTable";
 import { AgGridVue } from "ag-grid-vue";
-// import { API_URL } from "@/utils/constants";
-// import axios from "axios";
 import ReviewService from "@/services/review.service";
-// import { sortData } from "@/utils/utils";
-// import { sortAndFilter } from "@/utils/utils";
-// import { API_URL } from "@/utils/constants";
-// import loading from "./overlays/loading";
-// import CustomLoadingOverlay from "@/views/overlays/CustomLoadingOverlay";
 
 export default {
   name: "Reviews",
   components: {
-    // ReviewTable,
-    // CustomLoadingOverlay,
     AgGridVue,
   },
   data() {
@@ -167,11 +143,10 @@ export default {
       //   data.id = "R" + (index + 1);
       // });
 
-      var dataSource = {
+      let dataSource = {
         rowCount: null,
 
         getRows: async function (params) {
-          // console.log("asking for " + params.startRow + " to " + params.endRow);
           let sortParams = "";
           if (params.sortModel) {
             params.sortModel.forEach((model) => {
@@ -198,34 +173,23 @@ export default {
                   }
                   break;
                 default:
-                  sortParams = "";
+                  sortParams += "";
               }
             });
           }
 
           let filterParams = "";
-          // if (params.filterModel) {
-          //   params.filterModel.forEach((model) => {
-          //     switch (model.colId) {
-          //       case "feature":
-          //         filterParams += `&filter[feature]=${model.filter}`;
-          //         break;
-          //       case "sentiment":
-          //         if (filterParams) {
-          //           filterParams += `&filter[sentiment]=${model.filter}`;
-          //         } else {
-          //           filterParams += `&filter[sentiment]=${model.filter}`;
-          //         }
-          //         break;
-          //       case "product":
-          //         filterParams += `&filter[feature]=${model.filter}`;
-          //
-          //         break;
-          //       default:
-          //         filterParams = "";
-          //     }
-          //   });
-          // }
+          if (params.filterModel) {
+            if (params.filterModel.product) {
+              filterParams += `&product=${params.filterModel.product.filter.toString()}`;
+            }
+            if (params.filterModel.feature) {
+              filterParams += `&feature=${params.filterModel.feature.filter.toString()}`;
+            }
+            if (params.filterModel.text) {
+              filterParams += `&text=${params.filterModel.text.filter.toString()}`;
+            }
+          }
 
           // let page = this.gridApi.api.paginationGetCurrentPage();
           let response = await ReviewService.getReviews(
@@ -246,7 +210,7 @@ export default {
           const rowsThisPage = response.data.data;
           // If number of rows > 500, set lastRow = 500
           // otherwise set it to -1 and continue loading when scrolling down
-          var lastRow = params.endRow >= totalCount ? totalCount : -1;
+          let lastRow = params.endRow >= totalCount ? totalCount : -1;
           // Tell the grid we got our rows ready
           params.successCallback(rowsThisPage, lastRow);
 
@@ -301,13 +265,31 @@ export default {
         cellRenderer: "loadingRenderer",
         checkboxSelection: true,
       },
-      { field: "sentiment" },
-      { field: "product" },
-      { field: "text" },
+      {
+        field: "sentiment",
+        sortable: true,
+        filter: true,
+      },
+      {
+        field: "product",
+        sortable: true,
+        filter: true,
+        // filterParams: filterParams,
+      },
+      {
+        field: "text",
+        filter: true,
+        width: 300,
+      },
+      {
+        field: "button",
+        width: 100,
+        headerName: "",
+      },
     ];
     this.defaultColDef = {
-      minWidth: 150,
-      sortable: true,
+      minWidth: 100,
+      resizable: true,
     };
 
     this.frameworkComponents = {

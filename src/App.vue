@@ -16,11 +16,18 @@
                 <div style="margin-left: 5px">Reviews</div>
               </v-btn>
             </router-link>
-            <router-link :to="{ name: 'Profile' }" tag="button">
-              <v-btn text>
-                <v-icon small>mdi-account-circle</v-icon>
-                <div style="margin-left: 5px">Profile</div>
-              </v-btn>
+            <router-link
+              :to="{ name: 'Profile' }"
+              tag="button"
+              custom
+              v-slot="{ navigate }"
+            >
+              <button @click="navigate" role="link">
+                <v-btn text>
+                  <v-icon small>mdi-account-circle</v-icon>
+                  <div style="margin-left: 5px">Profile</div>
+                </v-btn>
+              </button>
             </router-link>
             <a
               href=""

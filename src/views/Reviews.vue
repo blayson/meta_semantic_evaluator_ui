@@ -5,9 +5,14 @@
     <br />
     <v-row no-gutters>
       <v-col md="2">
-        <v-card>
-          <v-card-title>Filters</v-card-title>
-        </v-card>
+        <ReviewFilters
+          :redo-size="redoSize"
+          :undo-size="undoSize"
+          @on-page-size-changed="onPageSizeChanged"
+          @undo="undo"
+          @redo="redo"
+          @on-date-sort-changed="onDateSortChanged"
+        ></ReviewFilters>
       </v-col>
       <v-col md="10">
         <v-container>
@@ -31,31 +36,32 @@
               </v-tabs>
             </v-col>
           </v-row>
-          <v-row no-gutters>
-            <v-col md="3" style="padding: 0 10px 0 10px">
-              <v-select label="Search"></v-select>
-            </v-col>
-            <v-col md="3" style="padding: 0 10px 0 10px">
-              <v-select label="Search"></v-select>
-            </v-col>
-            <v-col
-              justify="end"
-              align-self="center"
-              md="3"
-              offset-md="3"
-              style="padding: 0 10px 0 10px"
-            >
-              Newest first
-              <span> | </span>
-              Oldest first
-            </v-col>
-          </v-row>
+          <!--          <v-row no-gutters>-->
+          <!--            <v-col md="3" style="padding: 0 10px 0 10px">-->
+          <!--              <v-select label="Search"></v-select>-->
+          <!--            </v-col>-->
+          <!--            <v-col md="3" style="padding: 0 10px 0 10px">-->
+          <!--              <v-select label="Search"></v-select>-->
+          <!--            </v-col>-->
+          <!--            <v-col-->
+          <!--              justify="end"-->
+          <!--              align-self="center"-->
+          <!--              md="3"-->
+          <!--              offset-md="3"-->
+          <!--              style="padding: 0 10px 0 10px"-->
+          <!--            >-->
+          <!--            </v-col>-->
+          <!--          </v-row>-->
           <v-row>
             <v-col>
-              <div class="ag-theme-material">
+              <div class="example-wrapper">
                 <!--                <button @click="getSelectedRows()">Get Selected Rows</button>-->
+
+                <div class="test-header"></div>
+
                 <ag-grid-vue
                   style="width: 100%"
+                  class="ag-theme-material"
                   :columnDefs="columnDefs"
                   :gridOptions="gridOptions"
                   @grid-ready="onGridReady"
@@ -73,9 +79,16 @@
                   :getRowNodeId="getRowNodeId"
                   :cacheBlockSize="cacheBlockSize"
                   domLayout="autoHeight"
-                  :components="frameworkComponents"
                   @cell-value-changed="onCellValueChanged"
+                  :context="context"
+                  :undoRedoCellEditing="undoRedoCellEditing"
+                  :undoRedoCellEditingLimit="undoRedoCellEditingLimit"
+                  :enableCellChangeFlash="true"
+                  @first-data-rendered="onFirstDataRendered"
                 >
+                  <!--                  :enableRangeSelection="true"-->
+                  <!--                  :enableFillHandle="true"-->
+                  <!--                  :components="frameworkComponents"-->
                   <!--                  @on-row-data-changed="onRowDataChanged"-->
                 </ag-grid-vue>
               </div>
@@ -88,15 +101,18 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+// import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
 import ReviewService from "@/services/review.service";
-import BtnCellRenderer from "@/utils/btnCellRenderer";
+import SentimentCellRenderer from "@/components/SentimentCellRenderer";
+import ButtonCellRenderer from "@/components/ButtonCellRenderer";
+import ReviewFilters from "@/components/ReviewFilters";
 
 export default {
   name: "Reviews",
   components: {
     AgGridVue,
+    ReviewFilters,
   },
   data() {
     return {
@@ -115,8 +131,11 @@ export default {
       infiniteInitialRowCount: null,
       maxBlocksInCache: null,
       getRowNodeId: null,
-      frameworkComponents: null,
 
+      undoRedoCellEditing: null,
+      undoRedoCellEditingLimit: null,
+      // frameworkComponents: null,
+      context: null,
       args: 0,
       tab: null,
       tabs: [
@@ -126,22 +145,83 @@ export default {
         { name: "Approved", id: "approved" },
         { name: "All", id: "all" },
       ],
+
+      undoSize: 0,
+      redoSize: 0,
     };
   },
-  computed: mapState(["status"]),
+
   methods: {
-    // eslint-disable-next-line no-unused-vars
+    methodFromParent(cell) {
+      alert("Parent Component Method from " + cell + "!");
+    },
+
+    onPageSizeChanged(newPageSize) {
+      this.gridApi.paginationSetPageSize(newPageSize);
+    },
+
+    onDateSortChanged(dateSort) {
+      this.columnApi.applyColumnState({
+        state: [
+          {
+            colId: "published_at",
+            sort: dateSort === 1 ? "asc" : "desc",
+          },
+        ],
+      });
+    },
+
+    onFirstDataRendered() {
+      this.undoSize = 0;
+      this.redoSize = 0;
+      // setValue('#undoInput', 0);
+      // disable('#undoInput', true);
+      // setValue('#redoInput', 0);
+      // disable('#redoInput', true);
+      // disable('#redoBtn', true);
+    },
+
     onCellValueChanged(params) {
-      var colId = params.column.getId();
-      if (colId === "sentiment") {
-        // var selectedCountry = params.data.country;
-        // var selectedCity = params.data.city;
-        // var allowedCities = countyToCityMap(selectedCountry);
-        // var cityMismatch = allowedCities.indexOf(selectedCity) < 0;
-        // if (cityMismatch) {
-        //   params.node.setDataValue("city", null);
-        // }
-      }
+      this.undoSize = params.api.getCurrentUndoSize();
+      this.redoSize = params.api.getCurrentRedoSize();
+      // setValue("#undoInput", undoSize);
+      // var redoSize = params.api.getCurrentRedoSize();
+      // setValue("#redoInput", redoSize);
+      // disable("#redoBtn", redoSize < 1);
+      // var colId = params.column.getId();
+      // console.log(params);
+      // const par = { columns: ["button"] };
+      // const instances = this.gridApi.getCellRendererInstances(par);
+      // instances.forEach((instance) => {
+      //   if (instance.getFrameworkComponentInstance) {
+      //     instance.getFrameworkComponentInstance().setChanged(true);
+      //   } else {
+      //     instance.setChanged(true);
+      //   }
+      // });
+      // params.api.refreshCells();
+      // if (colId === "sentiment") {
+      // var selectedCountry = params.data.country;
+      // var selectedCity = params.data.city;
+      // var allowedCities = countyToCityMap(selectedCountry);
+      // var cityMismatch = allowedCities.indexOf(selectedCity) < 0;
+      // if (cityMismatch) {
+      //   params.node.setDataValue("city", null);
+      // }
+      // }
+    },
+
+    undo() {
+      this.gridApi.undoCellEditing();
+    },
+
+    redo() {
+      this.gridApi.redoCellEditing();
+    },
+
+    disable(id, disabled) {
+      document.querySelector(id).disabled = disabled;
+      document.querySelector(id).disable;
     },
 
     setTab(tab) {
@@ -153,6 +233,9 @@ export default {
     },
 
     onGridReady(params) {
+      this.redoSize = 0;
+      this.undoSize = 0;
+
       let dataSource = {
         rowCount: null,
 
@@ -162,6 +245,7 @@ export default {
           // params.api.forEach(function (rowNode, index) {
           //   rowNode.id = idSequence++;
           // });
+
           let sortParams = "";
           if (params.sortModel) {
             params.sortModel.forEach((model) => {
@@ -185,6 +269,13 @@ export default {
                     sortParams += `,product ${model.sort}`;
                   } else {
                     sortParams += `&sort=product ${model.sort}`;
+                  }
+                  break;
+                case "published_at":
+                  if (sortParams) {
+                    sortParams += `,date ${model.sort}`;
+                  } else {
+                    sortParams += `&sort=date ${model.sort}`;
                   }
                   break;
                 default:
@@ -252,6 +343,7 @@ export default {
 
       params.api.setDatasource(dataSource);
     },
+
     getSelectedRows() {
       const selectedNodes = this.gridApi.getSelectedNodes();
       const selectedData = selectedNodes.map((node) => node.data);
@@ -261,42 +353,64 @@ export default {
       alert(`Selected nodes: ${selectedDataStringPresentation}`);
     },
   },
+
   beforeMount() {
-    this.gridOptions = {};
-    this.columnDefs = [
-      {
-        headerName: "ID",
-        maxWidth: 100,
-        valueGetter: "node.id",
-        cellRenderer: "loadingRenderer",
-        sortable: false,
-        suppressMenu: true,
+    this.gridOptions = {
+      // eslint-disable-next-line no-unused-vars
+      onRowEditingStarted: function (event) {
+        console.log("never called - not doing row editing");
       },
+      // eslint-disable-next-line no-unused-vars
+      onRowEditingStopped: function (event) {
+        console.log("never called - not doing row editing");
+      },
+      // eslint-disable-next-line no-unused-vars
+      onCellEditingStarted: function (event) {
+        console.log("cellEditingStarted");
+      },
+      // eslint-disable-next-line no-unused-vars
+      onCellEditingStopped: function (event) {
+        console.log("cellEditingStopped");
+      },
+    };
+
+    this.columnDefs = [
+      // {
+      //   headerName: "ID",
+      //   maxWidth: 100,
+      //   valueGetter: "node.id",
+      //   cellRenderer: "loadingRenderer",
+      //   sortable: false,
+      //   suppressMenu: true,
+      // },
       {
         field: "feature",
         sortable: true,
+        maxWidth: 250,
         filter: true,
-        cellRenderer: "loadingRenderer",
-        checkboxSelection: true,
+        unSortIcon: true,
+        // cellRendererFramework: CustomLoadingOverlay,
+        // checkboxSelection: true,
       },
       {
         field: "sentiment",
         sortable: true,
-        filter: true,
-        // frameworkComponent: "SentimentCellRenderer",
-        cellRenderer: "sentimentCellRenderer",
+        maxWidth: 150,
+        unSortIcon: true,
+        colId: "sentiment",
+        cellRendererFramework: SentimentCellRenderer,
         cellEditor: "agSelectCellEditor",
         // cellRendererParams: {
         //   color: "guinnessBlack",
         // },
         cellEditorParams: {
           values: ["positive", "negative"],
-          // cellRenderer: "sentimentCellRenderer",
         },
       },
       {
         field: "product",
         sortable: true,
+        unSortIcon: true,
         filter: true,
         // filterParams: filterParams,
       },
@@ -306,14 +420,23 @@ export default {
         width: 300,
       },
       {
+        field: "published_at",
+        sortable: true,
+        hide: true,
+      },
+      {
         field: "button",
-        width: 100,
-        headerName: "",
-        cellRenderer: "btnCellRenderer",
+        maxWidth: 200,
+        valueGetter: "node.id",
+        headerName: "Submit",
+        colId: "button",
+        editable: false,
+        cellRendererFramework: ButtonCellRenderer,
         cellRendererParams: {
           clicked: function (field) {
             alert(`${field} was clicked`);
           },
+          changes: this.changes,
         },
       },
     ];
@@ -325,28 +448,17 @@ export default {
       flex: 1,
     };
 
-    this.frameworkComponents = {
-      bntCellRenderer: BtnCellRenderer,
-      loadingRenderer: (params) => {
-        if (params.value !== undefined) {
-          return params.value;
-        } else {
-          return `<div class="ag-custom-loading-cell" style="padding-left: 10px; line-height: 25px;">
-         <i class="fas fa-spinner fa-pulse"></i> <span> loading... </span>
-     </div>`;
-        }
-      },
-      // eslint-disable-next-line no-unused-vars
-      sentimentCellRenderer: (params) => {
-        return `<v-chip class="ma-2" color="green" text-color="white">${params.value}</v-chip>`;
-      },
-      // eslint-disable-next-line no-unused-vars
-      buttonCellRenderer: (params) => {
-        return `<span>
-          <button @click="rowButtonClicked" >Push For Total</>
-       </span>`;
-      },
-    };
+    // this.frameworkComponents = {
+    // loadingRenderer: (params) => {
+    //   if (params.value !== undefined) {
+    //     return params.value;
+    //   } else {
+    //     return `<div class="ag-custom-loading-cell" style="padding-left: 10px; line-height: 25px;">
+    // <i class="fas fa-spinner fa-pulse"></i> <span> loading... </span>
+    // </div>`;
+    //    }
+    //  },
+    // };
 
     this.rowSelection = "multiple";
     this.rowModelType = "infinite";
@@ -357,7 +469,11 @@ export default {
     this.infiniteInitialRowCount = 50;
     this.maxBlocksInCache = 10;
     this.rowBuffer = 0;
+    this.undoRedoCellEditing = true;
+    this.undoRedoCellEditingLimit = 10;
+
     this.getRowNodeId = (data) => data.id;
+    this.context = { componentParent: this };
   },
   mounted() {
     this.gridApi = this.gridOptions.api;

@@ -21,6 +21,19 @@ const routes = [
     component: () =>
       import(/* webpackChunkName: "register" */ "../views/Register.vue"),
   },
+
+  {
+    path: "/reviews",
+    name: "Reviews",
+    component: () =>
+      import(/* webpackChunkName: "reviews" */ "../views/Reviews.vue"),
+  },
+  {
+    path: "/profile",
+    name: "Profile",
+    component: () =>
+      import(/* webpackChunkName: "profile" */ "../views/Profile.vue"),
+  },
   {
     path: "/*",
     name: "PageNotFound",
@@ -36,18 +49,6 @@ const routes = [
       import(
         /* webpackChunkName: "userNotFound" */ "../views/errors/UserNotFound.vue"
       ),
-  },
-  {
-    path: "/reviews",
-    name: "Reviews",
-    component: () =>
-      import(/* webpackChunkName: "reviews" */ "../views/Reviews.vue"),
-  },
-  {
-    path: "/profile",
-    name: "Profile",
-    component: () =>
-      import(/* webpackChunkName: "profile" */ "../views/Profile.vue"),
   },
 ];
 

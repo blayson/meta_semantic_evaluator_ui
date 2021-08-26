@@ -59,7 +59,6 @@
                   :columnDefs="columnDefs"
                   :gridOptions="gridOptions"
                   @grid-ready="onGridReady"
-                  @on-row-data-changed="onRowDataChanged"
                   :defaultColDef="defaultColDef"
                   :rowSelection="rowSelection"
                   :rowModelType="rowModelType"
@@ -75,7 +74,9 @@
                   :cacheBlockSize="cacheBlockSize"
                   domLayout="autoHeight"
                   :components="frameworkComponents"
+                  @cell-value-changed="onCellValueChanged"
                 >
+                  <!--                  @on-row-data-changed="onRowDataChanged"-->
                 </ag-grid-vue>
               </div>
             </v-col>
@@ -90,6 +91,7 @@
 import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
 import ReviewService from "@/services/review.service";
+import BtnCellRenderer from "@/utils/btnCellRenderer";
 
 export default {
   name: "Reviews",
@@ -105,7 +107,6 @@ export default {
       columnApi: null,
       columnDefs: null,
       defaultColDef: null,
-      components: null,
       rowSelection: null,
       rowModelType: null,
       paginationPageSize: null,
@@ -115,11 +116,9 @@ export default {
       maxBlocksInCache: null,
       getRowNodeId: null,
       frameworkComponents: null,
-      // loadingCellRenderer: null,
-      // loadingCellRendererParams: null,
+
       args: 0,
       tab: null,
-      // tabComponents: [ReviewTable],
       tabs: [
         { name: "Not Reviewed", id: "notReviewed" },
         { name: "Reviewed", id: "reviewed" },
@@ -131,22 +130,38 @@ export default {
   },
   computed: mapState(["status"]),
   methods: {
+    // eslint-disable-next-line no-unused-vars
+    onCellValueChanged(params) {
+      var colId = params.column.getId();
+      if (colId === "sentiment") {
+        // var selectedCountry = params.data.country;
+        // var selectedCity = params.data.city;
+        // var allowedCities = countyToCityMap(selectedCountry);
+        // var cityMismatch = allowedCities.indexOf(selectedCity) < 0;
+        // if (cityMismatch) {
+        //   params.node.setDataValue("city", null);
+        // }
+      }
+    },
+
     setTab(tab) {
       this.$store.dispatch("setTab", tab);
     },
-    onRowDataChanged() {
-      this.gridApi.showLoadingOverlay();
-    },
-    onGridReady(params) {
-      // const updateData = (data) => {
-      // data.data.forEach(function (data, index) {
-      //   data.id = "R" + (index + 1);
-      // });
 
+    rowButtonClicked() {
+      console.log("hello");
+    },
+
+    onGridReady(params) {
       let dataSource = {
         rowCount: null,
 
         getRows: async function (params) {
+          // let idSequence = 0;
+          // // eslint-disable-next-line no-unused-vars
+          // params.api.forEach(function (rowNode, index) {
+          //   rowNode.id = idSequence++;
+          // });
           let sortParams = "";
           if (params.sortModel) {
             params.sortModel.forEach((model) => {
@@ -247,17 +262,16 @@ export default {
     },
   },
   beforeMount() {
-    // this.$store.dispatch("setTab", "notReviewed");
     this.gridOptions = {};
     this.columnDefs = [
-      // {
-      //   headerName: "ID",
-      //   maxWidth: 100,
-      //   valueGetter: "node.id",
-      //   cellRenderer: "loadingRenderer",
-      //   sortable: false,
-      //   suppressMenu: true,
-      // },
+      {
+        headerName: "ID",
+        maxWidth: 100,
+        valueGetter: "node.id",
+        cellRenderer: "loadingRenderer",
+        sortable: false,
+        suppressMenu: true,
+      },
       {
         field: "feature",
         sortable: true,
@@ -269,6 +283,16 @@ export default {
         field: "sentiment",
         sortable: true,
         filter: true,
+        // frameworkComponent: "SentimentCellRenderer",
+        cellRenderer: "sentimentCellRenderer",
+        cellEditor: "agSelectCellEditor",
+        // cellRendererParams: {
+        //   color: "guinnessBlack",
+        // },
+        cellEditorParams: {
+          values: ["positive", "negative"],
+          // cellRenderer: "sentimentCellRenderer",
+        },
       },
       {
         field: "product",
@@ -285,14 +309,24 @@ export default {
         field: "button",
         width: 100,
         headerName: "",
+        cellRenderer: "btnCellRenderer",
+        cellRendererParams: {
+          clicked: function (field) {
+            alert(`${field} was clicked`);
+          },
+        },
       },
     ];
+
     this.defaultColDef = {
       minWidth: 100,
       resizable: true,
+      editable: true,
+      flex: 1,
     };
 
     this.frameworkComponents = {
+      bntCellRenderer: BtnCellRenderer,
       loadingRenderer: (params) => {
         if (params.value !== undefined) {
           return params.value;
@@ -302,7 +336,18 @@ export default {
      </div>`;
         }
       },
+      // eslint-disable-next-line no-unused-vars
+      sentimentCellRenderer: (params) => {
+        return `<v-chip class="ma-2" color="green" text-color="white">${params.value}</v-chip>`;
+      },
+      // eslint-disable-next-line no-unused-vars
+      buttonCellRenderer: (params) => {
+        return `<span>
+          <button @click="rowButtonClicked" >Push For Total</>
+       </span>`;
+      },
     };
+
     this.rowSelection = "multiple";
     this.rowModelType = "infinite";
     this.cacheBlockSize = 100;
@@ -312,10 +357,7 @@ export default {
     this.infiniteInitialRowCount = 50;
     this.maxBlocksInCache = 10;
     this.rowBuffer = 0;
-
-    this.getRowNodeId = (item) => {
-      return item.id;
-    };
+    this.getRowNodeId = (data) => data.id;
   },
   mounted() {
     this.gridApi = this.gridOptions.api;

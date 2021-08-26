@@ -1,4 +1,4 @@
-# semantic_evaluator_ui
+# meta_semantic_evaluator_ui
 
 ## Project setup
 ```

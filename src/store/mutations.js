@@ -42,6 +42,27 @@ export const mutations = {
     state.status.reviews.response = data;
   },
 
+  UNDO_LAST_UPDATE(state) {
+    if (state.status.reviews.updatedData.length >= 1) {
+      state.status.reviews.poppedData.push(
+        state.status.reviews.updatedData.pop()
+      );
+    }
+  },
+
+  REDO_LAST_UPDATE(state) {
+    if (state.status.reviews.poppedData.length >= 1) {
+      state.status.reviews.updatedData.push(
+        state.status.reviews.poppedData.pop()
+      );
+    }
+  },
+
+  NULLIFY_UNDO_REDO(state) {
+    state.status.reviews.updatedData = [];
+    state.status.reviews.poppedData = [];
+  },
+
   SAVE_ERROR(state, dataName, status) {
     state.status[dataName].error = status;
   },

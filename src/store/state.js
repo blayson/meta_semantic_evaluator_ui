@@ -8,6 +8,7 @@ export const state = {
     reviews: {
       data: [],
       updatedData: [],
+      poppedData: [],
       response: {
         total: 0,
         start: 0,

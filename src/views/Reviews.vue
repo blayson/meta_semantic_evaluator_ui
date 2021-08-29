@@ -37,22 +37,6 @@
               </v-tabs>
             </v-col>
           </v-row>
-          <!--          <v-row no-gutters>-->
-          <!--            <v-col md="3" style="padding: 0 10px 0 10px">-->
-          <!--              <v-select label="Search"></v-select>-->
-          <!--            </v-col>-->
-          <!--            <v-col md="3" style="padding: 0 10px 0 10px">-->
-          <!--              <v-select label="Search"></v-select>-->
-          <!--            </v-col>-->
-          <!--            <v-col-->
-          <!--              justify="end"-->
-          <!--              align-self="center"-->
-          <!--              md="3"-->
-          <!--              offset-md="3"-->
-          <!--              style="padding: 0 10px 0 10px"-->
-          <!--            >-->
-          <!--            </v-col>-->
-          <!--          </v-row>-->
           <v-row>
             <v-col>
               <div class="example-wrapper">
@@ -110,6 +94,7 @@ import { AgGridVue } from "ag-grid-vue";
 import SentimentCellRenderer from "@/components/SentimentCellRenderer";
 import ButtonCellRenderer from "@/components/ButtonCellRenderer";
 import ReviewFilters from "@/components/ReviewFilters";
+import { applyFilters, applySort } from "@/utils/utils";
 
 export default {
   name: "Reviews",
@@ -132,14 +117,6 @@ export default {
       gridApi: null,
       columnApi: null,
       columnDefs: [
-        // {
-        //   headerName: "ID",
-        //   maxWidth: 100,
-        //   valueGetter: "node.id",
-        //   cellRenderer: "loadingRenderer",
-        //   sortable: false,
-        //   suppressMenu: true,
-        // },
         {
           field: "feature",
           sortable: true,
@@ -184,12 +161,6 @@ export default {
           colId: "button",
           editable: false,
           cellRendererFramework: ButtonCellRenderer,
-          cellRendererParams: {
-            clicked: function (field) {
-              alert(`${field} was clicked`);
-            },
-            changes: this.changes,
-          },
         },
       ],
       defaultColDef: null,
@@ -208,8 +179,8 @@ export default {
 
       undoRedoCellEditing: null,
       undoRedoCellEditingLimit: null,
-      // frameworkComponents: null,
       context: null,
+
       args: 0,
       tab: null,
       tabs: [
@@ -252,7 +223,6 @@ export default {
     onFirstDataRendered() {
       this.undoSize = 0;
       this.redoSize = 0;
-      // this.$store.dispatch("loadReviews", undefined);
     },
 
     onCellValueChanged(params) {
@@ -283,15 +253,12 @@ export default {
 
     undo() {
       this.gridApi.undoCellEditing();
+      this.$store.commit("UNDO_LAST_UPDATE");
     },
 
     redo() {
       this.gridApi.redoCellEditing();
-    },
-
-    disable(id, disabled) {
-      document.querySelector(id).disabled = disabled;
-      document.querySelector(id).disable;
+      this.$store.commit("REDO_LAST_UPDATE");
     },
 
     setTab(tab) {
@@ -300,6 +267,7 @@ export default {
 
     showNotification(text) {
       console.log("notification: " + text);
+      alert(text);
     },
 
     // isExternalFilterPresent() {
@@ -313,11 +281,6 @@ export default {
     // },
 
     async onGridReady(params) {
-      const setUndoRedoSize = () => {
-        this.redoSize = 0;
-        this.undoSize = 0;
-      };
-
       const getSelectedCategories = () => {
         return this.selectedProductCategories;
       };
@@ -340,80 +303,31 @@ export default {
         this.showNotification();
       };
 
+      const nullifyUndoRedo = () => {
+        this.redoSize = 0;
+        this.undoSize = 0;
+        this.$store.commit("NULLIFY_UNDO_REDO");
+      };
+
       // let pageSize = this.gridApi.paginationGetPageSize();
       //
       // const goToPage = (page) => {
       //   this.gridApi.paginationGoToPage(page);
       // };
 
-      setUndoRedoSize();
+      nullifyUndoRedo();
 
       let dataSource = {
         rowCount: null,
 
         getRows: async function (params) {
-          setUndoRedoSize();
+          nullifyUndoRedo();
 
-          let sortParams = "";
-          if (params.sortModel) {
-            params.sortModel.forEach((model) => {
-              switch (model.colId) {
-                case "feature":
-                  if (sortParams) {
-                    sortParams += `,feature ${model.sort}`;
-                  } else {
-                    sortParams += `&sort=feature ${model.sort}`;
-                  }
-                  break;
-                case "sentiment":
-                  if (sortParams) {
-                    sortParams += `,sentiment ${model.sort}`;
-                  } else {
-                    sortParams += `&sort=sentiment ${model.sort}`;
-                  }
-                  break;
-                case "product":
-                  if (sortParams) {
-                    sortParams += `,product ${model.sort}`;
-                  } else {
-                    sortParams += `&sort=product ${model.sort}`;
-                  }
-                  break;
-                case "published_at":
-                  if (sortParams) {
-                    sortParams += `,date ${model.sort}`;
-                  } else {
-                    sortParams += `&sort=date ${model.sort}`;
-                  }
-                  break;
-                default:
-                  sortParams += "";
-              }
-            });
-          }
-
-          let filterParams = "";
-          if (params.filterModel) {
-            if (params.filterModel.product) {
-              filterParams += `&product=${params.filterModel.product.filter.toString()}`;
-            }
-            if (params.filterModel.feature) {
-              filterParams += `&feature=${params.filterModel.feature.filter.toString()}`;
-            }
-            if (params.filterModel.text) {
-              filterParams += `&text=${params.filterModel.text.filter.toString()}`;
-            }
-          }
-
-          let selectedCat = getSelectedCategories();
-          if (selectedCat)
-            for (const item of selectedCat) {
-              if (filterParams) {
-                filterParams += `&pcat=${item}`;
-              } else {
-                filterParams += `&pcat=${item}`;
-              }
-            }
+          const sortParams = applySort(params.sortModel);
+          const filterParams = applyFilters(
+            params.filterModel,
+            getSelectedCategories()
+          );
 
           await getData({
             start: params.startRow,
@@ -475,15 +389,8 @@ export default {
     //   this.$store.dispatch("applyTransaction", rowData);
     // },
   },
-  // created() {
-  //   this.$store.dispatch("loadReviews", undefined);
-  // },
 
   beforeMount() {
-    const getEditingCell = () => {
-      return this.gridApi.getEditingCells();
-    };
-
     const commit = (mutation, payload) => {
       this.$store.commit(mutation, payload);
     };
@@ -503,11 +410,6 @@ export default {
       },
       // eslint-disable-next-line no-unused-vars
       onCellEditingStopped: function (event) {
-        console.log("cellEditingStopped");
-        console.log(getEditingCell());
-        console.log(event.newValue);
-        console.log(event.column.getId());
-        console.log(event.rowIndex);
         commit("SAVE_CELL_UPDATES", {
           index: event.rowIndex,
           colId: event.column.getId(),
@@ -523,18 +425,6 @@ export default {
       editable: true,
       flex: 1,
     };
-
-    // this.frameworkComponents = {
-    // loadingRenderer: (params) => {
-    //   if (params.value !== undefined) {
-    //     return params.value;
-    //   } else {
-    //     return `<div class="ag-custom-loading-cell" style="padding-left: 10px; line-height: 25px;">
-    // <i class="fas fa-spinner fa-pulse"></i> <span> loading... </span>
-    // </div>`;
-    //    }
-    //  },
-    // };
 
     this.rowSelection = "multiple";
     this.rowModelType = "infinite";

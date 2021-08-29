@@ -12,6 +12,7 @@
           @undo="undo"
           @redo="redo"
           @on-date-sort-changed="onDateSortChanged"
+          @on-category-selected="onCategorySelected"
         ></ReviewFilters>
       </v-col>
       <v-col md="10">
@@ -86,6 +87,9 @@
                   :enableCellChangeFlash="true"
                   @first-data-rendered="onFirstDataRendered"
                 >
+                  <!--                  @data-model-changed="dataModelChanged"-->
+                  <!--                  :isExternalFilterPresent="isExternalFilterPresent"-->
+                  <!--                  :doesExternalFilterPass="doesExternalFilterPass"-->
                   <!--                  :enableRangeSelection="true"-->
                   <!--                  :enableFillHandle="true"-->
                   <!--                  :components="frameworkComponents"-->
@@ -101,9 +105,8 @@
 </template>
 
 <script>
-// import { mapState } from "vuex";
+import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
-import ReviewService from "@/services/review.service";
 import SentimentCellRenderer from "@/components/SentimentCellRenderer";
 import ButtonCellRenderer from "@/components/ButtonCellRenderer";
 import ReviewFilters from "@/components/ReviewFilters";
@@ -113,6 +116,13 @@ export default {
   components: {
     AgGridVue,
     ReviewFilters,
+    // eslint-disable-next-line vue/no-unused-components
+    SentimentCellRenderer,
+  },
+  computed: {
+    ...mapState({
+      selectedProductCategories: "selectedCategories",
+    }),
   },
   data() {
     return {
@@ -121,7 +131,67 @@ export default {
       rowBuffer: null,
       gridApi: null,
       columnApi: null,
-      columnDefs: null,
+      columnDefs: [
+        // {
+        //   headerName: "ID",
+        //   maxWidth: 100,
+        //   valueGetter: "node.id",
+        //   cellRenderer: "loadingRenderer",
+        //   sortable: false,
+        //   suppressMenu: true,
+        // },
+        {
+          field: "feature",
+          sortable: true,
+          maxWidth: 250,
+          filter: true,
+          unSortIcon: true,
+        },
+        {
+          field: "sentiment",
+          sortable: true,
+          maxWidth: 150,
+          unSortIcon: true,
+          colId: "sentiment",
+          cellRendererFramework: "SentimentCellRenderer",
+          cellEditor: "agSelectCellEditor",
+          cellEditorParams: {
+            values: ["positive", "negative"],
+          },
+        },
+        {
+          field: "product",
+          sortable: true,
+          unSortIcon: true,
+          filter: true,
+          // filterParams: filterParams,
+        },
+        {
+          field: "text",
+          filter: true,
+          width: 300,
+        },
+        {
+          field: "published_at",
+          sortable: true,
+          hide: true,
+        },
+        {
+          field: "button",
+          maxWidth: 100,
+          valueGetter: "node.id",
+          headerName: "Submit",
+          colId: "button",
+          editable: false,
+          cellRendererFramework: ButtonCellRenderer,
+          cellRendererParams: {
+            clicked: function (field) {
+              alert(`${field} was clicked`);
+            },
+            changes: this.changes,
+          },
+        },
+      ],
       defaultColDef: null,
       rowSelection: null,
       rowModelType: null,
@@ -131,6 +201,10 @@ export default {
       infiniteInitialRowCount: null,
       maxBlocksInCache: null,
       getRowNodeId: null,
+
+      components: {
+        SentimentCellRenderer,
+      },
 
       undoRedoCellEditing: null,
       undoRedoCellEditingLimit: null,
@@ -152,8 +226,8 @@ export default {
   },
 
   methods: {
-    methodFromParent(cell) {
-      alert("Parent Component Method from " + cell + "!");
+    methodFromParent(rowIndex) {
+      alert("Updated: row - " + rowIndex + "!");
     },
 
     onPageSizeChanged(newPageSize) {
@@ -171,23 +245,19 @@ export default {
       });
     },
 
+    onCategorySelected() {
+      this.gridApi.onFilterChanged();
+    },
+
     onFirstDataRendered() {
       this.undoSize = 0;
       this.redoSize = 0;
-      // setValue('#undoInput', 0);
-      // disable('#undoInput', true);
-      // setValue('#redoInput', 0);
-      // disable('#redoInput', true);
-      // disable('#redoBtn', true);
+      // this.$store.dispatch("loadReviews", undefined);
     },
 
     onCellValueChanged(params) {
       this.undoSize = params.api.getCurrentUndoSize();
       this.redoSize = params.api.getCurrentRedoSize();
-      // setValue("#undoInput", undoSize);
-      // var redoSize = params.api.getCurrentRedoSize();
-      // setValue("#redoInput", redoSize);
-      // disable("#redoBtn", redoSize < 1);
       // var colId = params.column.getId();
       // console.log(params);
       // const par = { columns: ["button"] };
@@ -228,23 +298,61 @@ export default {
       this.$store.dispatch("setTab", tab);
     },
 
-    rowButtonClicked() {
-      console.log("hello");
+    showNotification(text) {
+      console.log("notification: " + text);
     },
 
-    onGridReady(params) {
-      this.redoSize = 0;
-      this.undoSize = 0;
+    // isExternalFilterPresent() {
+    //   console.log("isExternalFilterPresent");
+    //   return true;
+    // },
+    //
+    // // eslint-disable-next-line no-unused-vars
+    // doesExternalFilterPass(node) {
+    //   return true;
+    // },
+
+    async onGridReady(params) {
+      const setUndoRedoSize = () => {
+        this.redoSize = 0;
+        this.undoSize = 0;
+      };
+
+      const getSelectedCategories = () => {
+        return this.selectedProductCategories;
+      };
+
+      const updateData = () => {
+        return this.updateRowData();
+      };
+
+      // const getResponseData = () => {
+      //   return this.$store.getters.getResponseData;
+      // };
+      const getTotal = () => {
+        return this.$store.getters.getTotal;
+      };
+      const getData = async (payload) => {
+        await this.$store.dispatch("loadReviews", payload);
+      };
+
+      const showNotification = () => {
+        this.showNotification();
+      };
+
+      // let pageSize = this.gridApi.paginationGetPageSize();
+      //
+      // const goToPage = (page) => {
+      //   this.gridApi.paginationGoToPage(page);
+      // };
+
+      setUndoRedoSize();
 
       let dataSource = {
         rowCount: null,
 
         getRows: async function (params) {
-          // let idSequence = 0;
-          // // eslint-disable-next-line no-unused-vars
-          // params.api.forEach(function (rowNode, index) {
-          //   rowNode.id = idSequence++;
-          // });
+          setUndoRedoSize();
 
           let sortParams = "";
           if (params.sortModel) {
@@ -297,47 +405,46 @@ export default {
             }
           }
 
-          // let page = this.gridApi.api.paginationGetCurrentPage();
-          let response = await ReviewService.getReviews(
-            params.startRow,
-            params.endRow,
-            sortParams,
-            filterParams
-          );
+          let selectedCat = getSelectedCategories();
+          if (selectedCat)
+            for (const item of selectedCat) {
+              if (filterParams) {
+                filterParams += `&pcat=${item}`;
+              } else {
+                filterParams += `&pcat=${item}`;
+              }
+            }
 
-          if (response.status !== 200) {
-            params.failCallback();
-            return;
+          await getData({
+            start: params.startRow,
+            end: params.endRow,
+            sort: sortParams,
+            filter: filterParams,
+          });
+          // const respData = getResponseData();
+          //
+          // let page = respData.end / pageSize;
+          //
+          // goToPage(page);
+
+          // if (response.status !== 200) {
+          //   params.failCallback();
+          //   return;
+          // }
+
+          // Get total count of rows (returns "100" in this example)
+          const totalCount = getTotal();
+          if (totalCount === 0) {
+            console.log("No rows");
+            showNotification("No rows");
           }
-
-          // Get total count of rows (returns "500" in this example)
-          const totalCount = response.data.data.total;
           // Get the rows in this batch
-          const rowsThisPage = response.data.data;
-          // If number of rows > 500, set lastRow = 500
+          const rowsThisPage = updateData();
+          // If number of rows > 100, set lastRow = 100
           // otherwise set it to -1 and continue loading when scrolling down
           let lastRow = params.endRow >= totalCount ? totalCount : -1;
           // Tell the grid we got our rows ready
           params.successCallback(rowsThisPage, lastRow);
-
-          // setTimeout(function () {
-          // var dataAfterSortingAndFiltering = sortAndFilter(
-          //   data.data,
-          //   params.sortModel,
-          //   params.filterModel
-          // );
-          //
-          //   var rowsThisPage = dataAfterSortingAndFiltering.slice(
-          //     params.startRow,
-          //     params.endRow
-          //   );
-          //
-          //   var lastRow = -1;
-          //   if (dataAfterSortingAndFiltering.length <= params.endRow) {
-          //     lastRow = dataAfterSortingAndFiltering.length;
-          //   }
-          //
-          //   params.successCallback(rowsThisPage, lastRow);
         },
       };
 
@@ -352,9 +459,35 @@ export default {
         .join(", ");
       alert(`Selected nodes: ${selectedDataStringPresentation}`);
     },
+
+    updateRowData() {
+      return Object.freeze(this.copyRowData(this.$store.getters.allReviews));
+    },
+
+    copyRowData(data) {
+      return data.map((datum) => {
+        return {
+          ...datum,
+        };
+      });
+    },
+    // dataModelChanged(rowData) {
+    //   this.$store.dispatch("applyTransaction", rowData);
+    // },
   },
+  // created() {
+  //   this.$store.dispatch("loadReviews", undefined);
+  // },
 
   beforeMount() {
+    const getEditingCell = () => {
+      return this.gridApi.getEditingCells();
+    };
+
+    const commit = (mutation, payload) => {
+      this.$store.commit(mutation, payload);
+    };
+
     this.gridOptions = {
       // eslint-disable-next-line no-unused-vars
       onRowEditingStarted: function (event) {
@@ -371,75 +504,18 @@ export default {
       // eslint-disable-next-line no-unused-vars
       onCellEditingStopped: function (event) {
         console.log("cellEditingStopped");
+        console.log(getEditingCell());
+        console.log(event.newValue);
+        console.log(event.column.getId());
+        console.log(event.rowIndex);
+        commit("SAVE_CELL_UPDATES", {
+          index: event.rowIndex,
+          colId: event.column.getId(),
+          oldValue: event.oldValue,
+          newValue: event.newValue,
+        });
       },
     };
-
-    this.columnDefs = [
-      // {
-      //   headerName: "ID",
-      //   maxWidth: 100,
-      //   valueGetter: "node.id",
-      //   cellRenderer: "loadingRenderer",
-      //   sortable: false,
-      //   suppressMenu: true,
-      // },
-      {
-        field: "feature",
-        sortable: true,
-        maxWidth: 250,
-        filter: true,
-        unSortIcon: true,
-        // cellRendererFramework: CustomLoadingOverlay,
-        // checkboxSelection: true,
-      },
-      {
-        field: "sentiment",
-        sortable: true,
-        maxWidth: 150,
-        unSortIcon: true,
-        colId: "sentiment",
-        cellRendererFramework: SentimentCellRenderer,
-        cellEditor: "agSelectCellEditor",
-        // cellRendererParams: {
-        //   color: "guinnessBlack",
-        // },
-        cellEditorParams: {
-          values: ["positive", "negative"],
-        },
-      },
-      {
-        field: "product",
-        sortable: true,
-        unSortIcon: true,
-        filter: true,
-        // filterParams: filterParams,
-      },
-      {
-        field: "text",
-        filter: true,
-        width: 300,
-      },
-      {
-        field: "published_at",
-        sortable: true,
-        hide: true,
-      },
-      {
-        field: "button",
-        maxWidth: 200,
-        valueGetter: "node.id",
-        headerName: "Submit",
-        colId: "button",
-        editable: false,
-        cellRendererFramework: ButtonCellRenderer,
-        cellRendererParams: {
-          clicked: function (field) {
-            alert(`${field} was clicked`);
-          },
-          changes: this.changes,
-        },
-      },
-    ];
 
     this.defaultColDef = {
       minWidth: 100,

@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es6"
+  },
+  "include": ["src/**/*.vue", "src/**/*.js"],
+  "exclude": ["node_modules"],
+  "allowJs": true
+}

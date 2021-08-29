@@ -1,19 +1,24 @@
 export const state = {
-  category: [],
+  // user
   isLoggedIn: false,
-  reviewIds: [],
-  reviews: [],
-  reviewsPagination: {
-    page: 0,
-    size: 0,
-    total: 0,
-  },
-  reviewsPromise: null,
+  user: null,
+
+  // reviews
   status: {
     reviews: {
-      loading: false,
+      data: [],
+      updatedData: [],
+      response: {
+        total: 0,
+        start: 0,
+        end: 100,
+      },
       error: false,
       tab: 1,
     },
   },
+
+  // product categories for filters
+  categories: [],
+  selectedCategories: [],
 };

@@ -5,7 +5,6 @@
     </v-toolbar>
 
     <v-card-text>
-      <h2 class="text-h6 mb-2">Settings</h2>
       <v-select
         @change="onPageSizeChanged()"
         id="page-size"
@@ -61,11 +60,32 @@
         <v-chip filter outlined> Newest first </v-chip>
         <v-chip filter outlined> Oldest first </v-chip>
       </v-chip-group>
+
+      <v-divider></v-divider>
+
+      <v-chip-group
+        v-model="selectedCategories"
+        column
+        multiple
+        @change="onCategorySelected()"
+      >
+        <v-chip
+          filter
+          outlined
+          v-for="item in categories"
+          :key="item.id"
+          v-bind:value="item.id"
+        >
+          {{ item.product_category }}
+        </v-chip>
+      </v-chip-group>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
+import { mapState } from "vuex";
+
 export default {
   name: "ReviewFilters",
   props: ["undoSize", "redoSize"],
@@ -73,7 +93,13 @@ export default {
     dateSort: 0,
     pageSize: 10,
     pageSizeItems: [10, 25, 50, 100],
+    selectedCategories: [],
   }),
+  computed: {
+    ...mapState({
+      categories: "categories",
+    }),
+  },
   methods: {
     onPageSizeChanged() {
       this.$emit("on-page-size-changed", this.pageSize);
@@ -87,6 +113,14 @@ export default {
     redo() {
       this.$emit("redo");
     },
+    onCategorySelected() {
+      this.$store.dispatch("setSelectedCategories", this.selectedCategories);
+      this.$emit("on-category-selected");
+    },
+  },
+  beforeMount() {
+    this.$store.dispatch("loadProductCategories");
+    this.selectedCategories = this.$store.state.selectedCategories;
   },
 };
 </script>

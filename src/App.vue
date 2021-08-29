@@ -3,7 +3,7 @@
     <v-app-bar app>
       <v-container>
         <v-row>
-          <v-toolbar-title style="margin: 0 30px 0 10px"
+          <v-toolbar-title style="margin: 0 30px 0 10px" class="toolbar-title"
             >Semantic Results Evaluator
           </v-toolbar-title>
 
@@ -101,3 +101,9 @@ export default {
   },
 };
 </script>
+
+<style scoped lang="scss" rel="stylesheet/scss">
+.toolbar-title {
+  color: #310080;
+}
+</style>

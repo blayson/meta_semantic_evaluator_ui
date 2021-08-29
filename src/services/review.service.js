@@ -2,14 +2,21 @@
 import { http } from "@/utils/http-common";
 
 const ReviewService = {
-  getReviews: async function (start, end, sort, filter) {
-    let url = `/reviews?start=${start}&end=${end}${sort}${filter}`;
+  baseUrl: "/reviews",
 
-    try {
-      return await http.get(url);
-    } catch (error) {
-      console.error(error);
-    }
+  getReviews: async function (payload) {
+    const url = `${this.baseUrl}?start=${payload.start}&end=${payload.end}${payload.sort}${payload.filter}`;
+    return await http.get(url);
+  },
+
+  getProductCategories: async function () {
+    const url = `${this.baseUrl}/categories`;
+    return await http.get(url);
+  },
+
+  submitUpdates: async function (review_id, payload) {
+    const url = `${this.baseUrl}/${review_id}/updates/submit`;
+    return await http.post(url, payload);
   },
 };
 

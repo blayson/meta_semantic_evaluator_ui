@@ -5,9 +5,9 @@
 </template>
 
 <script>
-import Vue from "vue";
+// import Vue from "vue";
 
-export default Vue.extend({
+export default {
   data: function () {
     return {
       value: null,
@@ -19,9 +19,7 @@ export default Vue.extend({
       if (sentiment === "positive") return "green";
       else return "red";
     },
-    focusIn() {
-      return false;
-    },
+
     /* Component Editor Lifecycle methods */
     // the final value to send to the grid, on completion of editing
     getValue() {
@@ -46,7 +44,7 @@ export default Vue.extend({
     this.value = this.params.value;
     // Vue.nextTick(() => this.$refs.input.focus());
   },
-});
+};
 </script>
 
 <style scoped></style>

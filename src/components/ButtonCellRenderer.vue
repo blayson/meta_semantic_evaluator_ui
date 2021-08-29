@@ -1,16 +1,11 @@
 <template>
   <div>
     <div v-if="!valueExist()">
-      <v-btn elevation="1" small tile loading disabled>Check</v-btn>
+      <v-btn elevation="1" small tile loading disabled></v-btn>
     </div>
     <div v-else>
-      <v-btn
-        @click="invokeParentMethod()"
-        color="accent"
-        elevation="1"
-        small
-        tile
-        >Check</v-btn
+      <v-btn @click="invokeParentMethod()" color="accent" elevation="1" small
+        ><v-icon>mdi-check</v-icon></v-btn
       >
     </div>
   </div>
@@ -38,8 +33,30 @@ export default Vue.extend({
 
     invokeParentMethod() {
       // `Row: ${this.params.node.rowIndex}, Col: ${this.params.colDef.headerName}`;
+      const id_arr = this.cellValue.split("|");
+      const [review_id, feature_id] = id_arr;
 
-      this.params.context.componentParent.methodFromParent();
+      let updatedData = this.$store.getters.getUpdatedData(
+        this.params.node.rowIndex
+      );
+
+      this.$store.dispatch("submitUpdates", {
+        review_id,
+        feature_id,
+        ...updatedData,
+      });
+
+      if (!updatedData) {
+        alert("There is no updated data in this row");
+        return;
+      }
+      console.log("updated data: " + updatedData);
+      console.log("review data: " + review_id);
+      console.log("feature data: " + feature_id);
+
+      this.params.context.componentParent.methodFromParent(
+        this.params.node.rowIndex
+      );
     },
 
     // gets called whenever the user gets the cell to refresh

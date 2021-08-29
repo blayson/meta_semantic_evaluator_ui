@@ -2,21 +2,48 @@ import { tabMap } from "@/utils/constants";
 
 export const mutations = {
   SAVE_REVIEWS(state, reviews) {
-    state.reviews = reviews;
+    state.status.reviews.data = reviews;
   },
-  SAVE_REVIEWS_PAGINATION(state, { page, size, total }) {
-    state.reviewsPagination.page = page;
-    state.reviewsPagination.size = size;
-    state.reviewsPagination.total = total;
+
+  SAVE_CATEGORIES(state, categories) {
+    state.categories = categories;
   },
-  SAVE_LOADING(state, dataName, status) {
-    state.status[dataName].loading = status;
+
+  SAVE_SELECTED_CATEGORIES(state, selected) {
+    state.selectedCategories = selected;
   },
+
+  SAVE_CELL_UPDATES(state, payload) {
+    const colId = payload.colId;
+    let updated = false;
+    for (const [data, i] of state.status.reviews.updatedData.entries()) {
+      if (data.index === payload.index) {
+        state.status.reviews.updatedData[i][colId].newValue = payload.newValue;
+        state.status.reviews.updatedData[i][colId].oldValue = payload.oldValue;
+
+        updated = true;
+        break;
+      }
+    }
+    if (updated !== true) {
+      let dataToUpdate = {
+        index: payload.index,
+      };
+
+      dataToUpdate[colId] = {
+        newValue: payload.newValue,
+        oldValue: payload.oldValue,
+      };
+      state.status.reviews.updatedData.push(dataToUpdate);
+    }
+  },
+
+  SAVE_RESPONSE(state, data) {
+    state.status.reviews.response = data;
+  },
+
   SAVE_ERROR(state, dataName, status) {
     state.status[dataName].error = status;
-  },
-  SAVE_PROMISE(state, promise) {
-    state.reviewsPromise = promise;
   },
 
   SET_TAB(state, tab) {

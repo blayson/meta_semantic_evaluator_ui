@@ -30,7 +30,7 @@
                 <v-tab
                   v-for="item in tabs"
                   :key="item.id"
-                  v-on:click="setTab(item.id)"
+                  v-on:click="setTab(item)"
                 >
                   {{ item.name }}
                 </v-tab>
@@ -91,24 +91,33 @@
 <script>
 import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
-import SentimentCellRenderer from "@/components/SentimentCellRenderer";
-import ButtonCellRenderer from "@/components/ButtonCellRenderer";
+import SentimentCellRenderer from "@/components/CellRenderers/SentimentCellRenderer";
+import ButtonCellRenderer from "@/components/CellRenderers/ButtonCellRenderer";
 import ReviewFilters from "@/components/ReviewFilters";
-import { applyFilters, applySort } from "@/utils/utils";
+import { applyFilters, applySort } from "@/helpers/utils";
+import { HISTORY_SIZE } from "@/helpers/constants";
 
 export default {
   name: "Reviews",
+
   components: {
     AgGridVue,
     ReviewFilters,
     // eslint-disable-next-line vue/no-unused-components
     SentimentCellRenderer,
   },
+
   computed: {
     ...mapState({
       selectedProductCategories: "selectedCategories",
+      statusDataType: "statusDataType",
     }),
+
+    currentUser() {
+      return this.$store.state.status.auth.user;
+    },
   },
+
   data() {
     return {
       gridOptions: null,
@@ -184,11 +193,41 @@ export default {
       args: 0,
       tab: null,
       tabs: [
-        { name: "Not Reviewed", id: "notReviewed" },
-        { name: "Reviewed", id: "reviewed" },
-        { name: "Rejected", id: "rejected" },
-        { name: "Approved", id: "approved" },
-        { name: "All", id: "all" },
+        {
+          name: "Not Reviewed",
+          id: "notReviewed",
+          filter(store) {
+            store.commit("SET_STATUS_TYPE", "");
+          },
+        },
+        {
+          name: "Reviewed",
+          id: "reviewed",
+          filter(store) {
+            store.commit("SET_STATUS_TYPE", "reviewed");
+          },
+        },
+        {
+          name: "Rejected",
+          id: "rejected",
+          filter(store) {
+            store.commit("SET_STATUS_TYPE", "rejected");
+          },
+        },
+        {
+          name: "Approved",
+          id: "approved",
+          filter(store) {
+            store.commit("SET_STATUS_TYPE", "approved");
+          },
+        },
+        {
+          name: "All",
+          id: "all",
+          filter(store) {
+            store.commit("SET_STATUS_TYPE", "all");
+          },
+        },
       ],
 
       undoSize: 0,
@@ -252,17 +291,19 @@ export default {
     },
 
     undo() {
-      this.gridApi.undoCellEditing();
       this.$store.commit("UNDO_LAST_UPDATE");
+      this.gridApi.undoCellEditing();
     },
 
     redo() {
-      this.gridApi.redoCellEditing();
       this.$store.commit("REDO_LAST_UPDATE");
+      this.gridApi.redoCellEditing();
     },
 
     setTab(tab) {
-      this.$store.dispatch("setTab", tab);
+      this.$store.dispatch("setTab", tab.id);
+      tab.filter(this.$store);
+      this.gridApi.onFilterChanged();
     },
 
     showNotification(text) {
@@ -285,13 +326,14 @@ export default {
         return this.selectedProductCategories;
       };
 
+      const getStatusDataType = () => {
+        return this.statusDataType;
+      };
+
       const updateData = () => {
         return this.updateRowData();
       };
 
-      // const getResponseData = () => {
-      //   return this.$store.getters.getResponseData;
-      // };
       const getTotal = () => {
         return this.$store.getters.getTotal;
       };
@@ -309,12 +351,6 @@ export default {
         this.$store.commit("NULLIFY_UNDO_REDO");
       };
 
-      // let pageSize = this.gridApi.paginationGetPageSize();
-      //
-      // const goToPage = (page) => {
-      //   this.gridApi.paginationGoToPage(page);
-      // };
-
       nullifyUndoRedo();
 
       let dataSource = {
@@ -326,7 +362,8 @@ export default {
           const sortParams = applySort(params.sortModel);
           const filterParams = applyFilters(
             params.filterModel,
-            getSelectedCategories()
+            getSelectedCategories(),
+            getStatusDataType()
           );
 
           await getData({
@@ -365,14 +402,14 @@ export default {
       params.api.setDatasource(dataSource);
     },
 
-    getSelectedRows() {
-      const selectedNodes = this.gridApi.getSelectedNodes();
-      const selectedData = selectedNodes.map((node) => node.data);
-      const selectedDataStringPresentation = selectedData
-        .map((node) => `${node.make} ${node.model}`)
-        .join(", ");
-      alert(`Selected nodes: ${selectedDataStringPresentation}`);
-    },
+    // getSelectedRows() {
+    //   const selectedNodes = this.gridApi.getSelectedNodes();
+    //   const selectedData = selectedNodes.map((node) => node.data);
+    //   const selectedDataStringPresentation = selectedData
+    //     .map((node) => `${node.make} ${node.model}`)
+    //     .join(", ");
+    //   alert(`Selected nodes: ${selectedDataStringPresentation}`);
+    // },
 
     updateRowData() {
       return Object.freeze(this.copyRowData(this.$store.getters.allReviews));
@@ -436,11 +473,12 @@ export default {
     this.maxBlocksInCache = 10;
     this.rowBuffer = 0;
     this.undoRedoCellEditing = true;
-    this.undoRedoCellEditingLimit = 10;
+    this.undoRedoCellEditingLimit = HISTORY_SIZE;
 
     this.getRowNodeId = (data) => data.id;
     this.context = { componentParent: this };
   },
+
   mounted() {
     this.gridApi = this.gridOptions.api;
     this.columnApi = this.gridOptions.columnApi;
@@ -459,7 +497,7 @@ export default {
 }
 
 #myGrid {
-  flex: 1 1 0px;
+  flex: 1 1 0;
   width: 100%;
 }
 

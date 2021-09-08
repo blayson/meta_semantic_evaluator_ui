@@ -11,7 +11,7 @@
               rules="required|email"
             >
               <v-text-field
-                v-model="email"
+                v-model="user.email"
                 :error-messages="errors"
                 label="E-mail"
                 required
@@ -27,7 +27,7 @@
               rules="required|min:5"
             >
               <v-text-field
-                v-model="password"
+                v-model="user.password"
                 :error-messages="errors"
                 label="Password"
                 type="Password"
@@ -59,7 +59,6 @@
 </template>
 
 <script>
-import { tokenManager } from "@/main";
 import { required, email, min } from "vee-validate/dist/rules";
 import {
   extend,
@@ -67,6 +66,7 @@ import {
   setInteractionMode,
   ValidationProvider,
 } from "vee-validate";
+import User from "@/models/user";
 
 setInteractionMode("eager");
 
@@ -89,30 +89,38 @@ export default {
     ValidationProvider,
     ValidationObserver,
   },
+
   data() {
     return {
-      email: "",
-      password: "",
+      user: new User(""),
       error: null,
     };
   },
+
+  computed: {
+    loggedIn() {
+      return this.$store.state.status.auth.loggedIn;
+    },
+  },
+
+  created() {
+    if (this.loggedIn) {
+      this.$router.push({ name: "Reviews" });
+    }
+  },
+
   methods: {
     async doLogin() {
-      this.$refs.observer.validate();
+      await this.$refs.observer.validate();
+
       try {
-        let formData = new FormData();
-        formData.append("username", this.email);
-        formData.append("password", this.password);
-        const response = await this.$http.post("/auth/login", formData, {
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-          },
-        });
-        const { token } = response.data;
-        tokenManager.setToken(token);
-        const { sub } = tokenManager.getPayload();
-        this.$emit("userLogged", { sub });
-        await this.$router.push("Home");
+        if (this.user.email && this.user.password) {
+          let formData = new FormData();
+          formData.append("username", this.user.email);
+          formData.append("password", this.user.password);
+          await this.$store.dispatch("login", formData);
+          await this.$router.push({ name: "Reviews" });
+        }
       } catch (e) {
         if (e.response.status === 400 || e.response.status === 404) {
           this.error = "User does not exist with this password and email";

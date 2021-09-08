@@ -9,5 +9,9 @@
 export default {
   name: "Profile",
   components: {},
+  currentUser() {
+    return this.$store.state.status.auth.user;
+  },
+  mounted() {},
 };
 </script>

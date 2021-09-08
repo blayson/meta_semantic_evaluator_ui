@@ -1,4 +1,5 @@
 import ReviewService from "@/services/review.service";
+import AuthService from "@/services/auth.service";
 
 export const actions = {
   async loadReviews({ commit }, payload) {
@@ -45,6 +46,33 @@ export const actions = {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
     }
+  },
+
+  async login({ commit }, formData) {
+    try {
+      const user = await AuthService.login(formData);
+      commit("LOGIN_SUCCESS", user);
+      return user;
+    } catch (e) {
+      commit("LOGIN_FAILURE");
+      throw e;
+    }
+  },
+
+  async register({ commit }, payload) {
+    try {
+      const response = await AuthService.register(payload);
+      commit("REGISTER_SUCCESS");
+      return response;
+    } catch (e) {
+      commit("REGISTER_FAILURE");
+      throw e;
+    }
+  },
+
+  logout({ commit }) {
+    AuthService.logout();
+    commit("LOGOUT");
   },
 
   setSelectedCategories({ commit }, selectedCategories) {

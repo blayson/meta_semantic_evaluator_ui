@@ -1,5 +1,4 @@
-// import { API_URL } from "@/utils/constants";
-import { http } from "@/utils/http-common";
+import http from "@/services/api";
 
 const ReviewService = {
   baseUrl: "/reviews",

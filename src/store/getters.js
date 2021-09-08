@@ -8,10 +8,19 @@ export const getters = {
 
   getResponseData: (state) => state.status.reviews.response,
 
-  getUpdatedData: (state) => (index) => {
-    for (const data of state.status.reviews.updatedData) {
+  getUpdatedDataHistory: (state) => (index) => {
+    for (const data of state.status.reviews.updatedDataHistory) {
       if (data.index === index) {
         return data;
+      }
+    }
+    return null;
+  },
+
+  getInitialRowData: (state) => (rowId, column) => {
+    for (const data of state.status.reviews.data) {
+      if (rowId === data.id) {
+        return data[column];
       }
     }
   },

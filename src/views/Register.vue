@@ -101,7 +101,6 @@ import {
   setInteractionMode,
   ValidationProvider,
 } from "vee-validate";
-import { tokenManager } from "@/main";
 
 setInteractionMode("eager");
 
@@ -134,6 +133,18 @@ export default {
       error: null,
     };
   },
+
+  computed: {
+    loggedIn() {
+      return this.$store.state.status.auth.loggedIn;
+    },
+  },
+
+  mounted() {
+    if (this.loggedIn) {
+      this.$router.push({ name: "Reviews" });
+    }
+  },
   methods: {
     async doRegister() {
       this.$refs.observer.validate();
@@ -146,12 +157,8 @@ export default {
           password: this.userData.password1,
         };
         try {
-          const response = await this.$http.post("/auth/register", payload);
-          const { token } = response.data;
-          tokenManager.setToken(token);
-          const { sub } = tokenManager.getPayload();
-          this.$emit("userLogged", { sub });
-          await this.$router.push({ name: "Home" });
+          await this.$store.dispatch("register", payload);
+          await this.$router.push({ name: "Login" });
         } catch (e) {
           if (e.response.status === 409) {
             this.error = "User with this email already exists";

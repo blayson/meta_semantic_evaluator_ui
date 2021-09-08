@@ -1,7 +1,7 @@
-import { http } from "@/utils/http-common";
-import { SRE_TOKEN } from "@/utils/constants";
+import { SRE_TOKEN } from "@/helpers/constants";
+import http from "@/services/api";
 
-export class TokenService {
+export class TokenServiceOld {
   token = null;
 
   setToken(token) {
@@ -36,4 +36,41 @@ export class TokenService {
   isUserLogged() {
     return this.token != null;
   }
+
+  getLocalAccessToken() {
+    return localStorage.getItem(SRE_TOKEN);
+  }
 }
+
+class TokenService {
+  getLocalRefreshToken() {
+    const user = JSON.parse(localStorage.getItem(SRE_TOKEN));
+    return user?.refreshToken;
+  }
+
+  getLocalAccessToken() {
+    const user = JSON.parse(localStorage.getItem(SRE_TOKEN));
+    return user?.accessToken;
+  }
+
+  updateLocalAccessToken(token) {
+    let user = JSON.parse(localStorage.getItem(SRE_TOKEN));
+    user.accessToken = token;
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+
+  getUser() {
+    return JSON.parse(localStorage.getItem(SRE_TOKEN));
+  }
+
+  setUser(user) {
+    console.log(JSON.stringify(user));
+    localStorage.setItem(SRE_TOKEN, JSON.stringify(user));
+  }
+
+  removeUser() {
+    localStorage.removeItem(SRE_TOKEN);
+  }
+}
+
+export default new TokenService();

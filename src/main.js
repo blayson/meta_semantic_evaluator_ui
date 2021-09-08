@@ -4,15 +4,20 @@ import router from "./router";
 import store from "./store";
 import vuetify from "./plugins/vuetify";
 
-import { TokenService } from "@/services/token.service";
-import { http } from "@/utils/http-common";
+import { TokenServiceOld } from "@/services/token.service";
+// import { http } from "@/helpers/http-common";
+import setupInterceptors from "@/services/setupInterceptors";
 
 Vue.config.productionTip = false;
 
-Vue.prototype.$http = http;
+// Vue.prototype.$http = http;
 
-export const tokenManager = new TokenService();
+export const tokenManager = new TokenServiceOld();
 tokenManager.renew();
+
+setupInterceptors(store);
+
+// Vue.use(VeeValidate);
 
 Vue.config.productionTip = false;
 

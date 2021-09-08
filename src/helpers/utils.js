@@ -112,7 +112,11 @@ export const applySort = function (sortModel) {
   return sortParams;
 };
 
-export const applyFilters = function (filterModel, selectedCategories) {
+export const applyFilters = function (
+  filterModel,
+  selectedCategories,
+  statusDataType
+) {
   let filterParams = "";
   if (filterModel) {
     if (filterModel.product) {
@@ -134,6 +138,10 @@ export const applyFilters = function (filterModel, selectedCategories) {
         filterParams += `&pcat=${item}`;
       }
     }
+
+  if (statusDataType) {
+    filterParams += `&status=${statusDataType}`;
+  }
 
   return filterParams;
 };

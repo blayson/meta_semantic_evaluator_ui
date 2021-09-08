@@ -5,8 +5,6 @@
 </template>
 
 <script>
-// import Vue from "vue";
-
 export default {
   data: function () {
     return {
@@ -24,7 +22,7 @@ export default {
     // the final value to send to the grid, on completion of editing
     getValue() {
       // this simple editor doubles any value entered into the input
-      return this.value * 2;
+      return this.value;
     },
 
     // Gets called once before editing starts, to give editor a chance to
@@ -37,7 +35,7 @@ export default {
     // If you return true, then the result of the edit will be ignored.
     isCancelAfterEnd() {
       // our editor will reject any value greater than 1000
-      return this.value > 1000;
+      return this.value;
     },
   },
   mounted() {

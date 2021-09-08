@@ -7,8 +7,8 @@
             >Semantic Results Evaluator
           </v-toolbar-title>
 
-          <div v-if="isLoggedIn">
-            Hello <b>{{ user.sub }}</b
+          <div v-if="currentUser">
+            Hello <b>{{ currentUser.sub }}</b
             >!
             <router-link :to="{ name: 'Reviews' }" tag="button">
               <v-btn text>
@@ -32,7 +32,7 @@
             <a
               href=""
               @click.prevent="doLogout"
-              v-if="isLoggedIn"
+              v-if="currentUser"
               style="color: cornflowerblue; margin-left: 5px"
               >Logout</a
             >
@@ -51,7 +51,7 @@
 
     <v-main>
       <v-container fluid>
-        <router-view @userLogged="onUserLog" :user="user"></router-view>
+        <router-view></router-view>
       </v-container>
     </v-main>
 
@@ -62,42 +62,35 @@
 </template>
 
 <script>
-import { tokenManager } from "@/main";
-// import Title from "@/components/Title";
-
 export default {
   name: "App",
 
-  components: {
-    // Title,
-  },
-
-  data: () => ({
-    user: null,
-  }),
-
+  components: {},
   computed: {
-    isLoggedIn() {
-      return this.user != null;
+    currentUser() {
+      return this.$store.state.status.auth.user;
     },
+    // showAdminBoard() {
+    //   if (this.currentUser && this.currentUser.roles) {
+    //     return this.currentUser.roles.includes('ROLE_ADMIN');
+    //   }
+    //
+    //   return false;
+    // },
+    // showModeratorBoard() {
+    //   if (this.currentUser && this.currentUser.roles) {
+    //     return this.currentUser.roles.includes('ROLE_MODERATOR');
+    //   }
+    //
+    //   return false;
+    // }
   },
 
   methods: {
     doLogout() {
-      this.user = null;
-      tokenManager.logout();
+      this.$store.dispatch("logout");
       this.$router.push({ name: "Login" });
     },
-
-    onUserLog(data) {
-      this.user = data;
-    },
-  },
-  mounted() {
-    const parsed_token = tokenManager.getPayload();
-    if (parsed_token !== null) {
-      this.user = { sub: parsed_token.sub };
-    }
   },
 };
 </script>

@@ -1,4 +1,4 @@
-import { tabMap } from "@/utils/constants";
+import { HISTORY_SIZE, TAB_MAP } from "@/helpers/constants";
 
 export const mutations = {
   SAVE_REVIEWS(state, reviews) {
@@ -15,26 +15,17 @@ export const mutations = {
 
   SAVE_CELL_UPDATES(state, payload) {
     const colId = payload.colId;
-    let updated = false;
-    for (const [data, i] of state.status.reviews.updatedData.entries()) {
-      if (data.index === payload.index) {
-        state.status.reviews.updatedData[i][colId].newValue = payload.newValue;
-        state.status.reviews.updatedData[i][colId].oldValue = payload.oldValue;
+    let dataToUpdate = {
+      index: payload.index,
+    };
 
-        updated = true;
-        break;
-      }
-    }
-    if (updated !== true) {
-      let dataToUpdate = {
-        index: payload.index,
-      };
-
-      dataToUpdate[colId] = {
-        newValue: payload.newValue,
-        oldValue: payload.oldValue,
-      };
-      state.status.reviews.updatedData.push(dataToUpdate);
+    dataToUpdate[colId] = {
+      newValue: payload.newValue,
+      oldValue: payload.oldValue,
+    };
+    state.status.reviews.updatedDataHistory.unshift(dataToUpdate);
+    if (state.status.reviews.updatedDataHistory.length > HISTORY_SIZE) {
+      state.status.reviews.updatedDataHistory.pop();
     }
   },
 
@@ -43,24 +34,31 @@ export const mutations = {
   },
 
   UNDO_LAST_UPDATE(state) {
-    if (state.status.reviews.updatedData.length >= 1) {
-      state.status.reviews.poppedData.push(
-        state.status.reviews.updatedData.pop()
-      );
+    if (state.status.reviews.updatedDataHistory.length >= 1) {
+      const undoState = state.status.reviews.updatedDataHistory.shift();
+      state.status.reviews.poppedDataHistory.unshift(undoState);
+    }
+    // Pop last item from the array as we have maximum history size
+    if (state.status.reviews.poppedDataHistory.length > HISTORY_SIZE) {
+      state.status.reviews.poppedDataHistory.pop();
     }
   },
 
   REDO_LAST_UPDATE(state) {
-    if (state.status.reviews.poppedData.length >= 1) {
-      state.status.reviews.updatedData.push(
-        state.status.reviews.poppedData.pop()
-      );
+    if (state.status.reviews.poppedDataHistory.length >= 1) {
+      const redoState = state.status.reviews.poppedDataHistory.shift();
+      state.status.reviews.updatedDataHistory.unshift(redoState);
+    }
+    // Pop last item from the array as we have maximum history size
+    if (state.status.reviews.updatedDataHistory.length > HISTORY_SIZE) {
+      state.status.reviews.updatedDataHistory.pop();
     }
   },
 
   NULLIFY_UNDO_REDO(state) {
     state.status.reviews.updatedData = [];
-    state.status.reviews.poppedData = [];
+    state.status.reviews.updatedDataHistory = [];
+    state.status.reviews.poppedDataHistory = [];
   },
 
   SAVE_ERROR(state, dataName, status) {
@@ -68,6 +66,28 @@ export const mutations = {
   },
 
   SET_TAB(state, tab) {
-    state.status.reviews.tab = tabMap[tab];
+    state.status.reviews.tab = TAB_MAP[tab];
+  },
+
+  LOGIN_SUCCESS(state, user) {
+    state.status.auth.loggedIn = true;
+    state.status.auth.user = user;
+  },
+  LOGIN_FAILURE(state) {
+    state.status.auth.loggedIn = false;
+    state.status.auth.user = null;
+  },
+  LOGOUT(state) {
+    state.status.auth.loggedIn = false;
+    state.status.auth.user = null;
+  },
+  REGISTER_SUCCESS(state) {
+    state.status.auth.loggedIn = false;
+  },
+  REGISTER_FAILURE(state) {
+    state.status.auth.loggedIn = false;
+  },
+  SET_STATUS_TYPE(state, type) {
+    state.statusDataType = type;
   },
 };

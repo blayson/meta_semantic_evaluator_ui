@@ -1,14 +1,40 @@
-export const state = {
-  // user
-  isLoggedIn: false,
-  user: null,
+import { SRE_TOKEN } from "@/helpers/constants";
 
+function parseUser() {
+  const token = localStorage.getItem(SRE_TOKEN);
+  if (token) {
+    const parts = token.split(".");
+    const rawToken = atob(parts[1]);
+    return JSON.parse(rawToken);
+  }
+  return null;
+}
+
+const user = parseUser();
+
+const updatedDataObject = {
+  index: Number,
+  sentiment: {
+    newValue: String,
+    oldValue: String,
+  },
+  feature: {
+    newValue: String,
+    oldValue: String,
+  },
+  product: {
+    newValue: String,
+    oldValue: String,
+  },
+};
+
+export const state = {
   // reviews
   status: {
     reviews: {
       data: [],
-      updatedData: [],
-      poppedData: [],
+      updatedDataHistory: [updatedDataObject],
+      poppedDataHistory: [updatedDataObject],
       response: {
         total: 0,
         start: 0,
@@ -17,9 +43,14 @@ export const state = {
       error: false,
       tab: 1,
     },
+    // user
+    auth: {
+      user: user,
+      loggedIn: !!user,
+    },
   },
-
   // product categories for filters
   categories: [],
   selectedCategories: [],
+  statusDataType: "",
 };

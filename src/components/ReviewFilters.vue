@@ -79,6 +79,23 @@
           {{ item.product_category }}
         </v-chip>
       </v-chip-group>
+
+      <v-chip-group
+        v-model="selectedStatus"
+        column
+        multiple
+        @change="onStatusSelected()"
+      >
+        <v-chip
+          filter
+          outlined
+          v-for="item in reviewStatus"
+          :key="item.id"
+          v-bind:value="item.id"
+        >
+          {{ item.name }}
+        </v-chip>
+      </v-chip-group>
     </v-card-text>
   </v-card>
 </template>
@@ -92,12 +109,14 @@ export default {
   data: () => ({
     dateSort: 0,
     pageSize: 10,
+    selectedStatus: [],
     pageSizeItems: [10, 25, 50, 100],
     selectedCategories: [],
   }),
   computed: {
     ...mapState({
       categories: "categories",
+      reviewStatus: "reviewStatus",
     }),
   },
   methods: {
@@ -115,6 +134,10 @@ export default {
     },
     onCategorySelected() {
       this.$store.dispatch("setSelectedCategories", this.selectedCategories);
+      this.$emit("on-category-selected");
+    },
+    onStatusSelected() {
+      this.$store.dispatch("setSelectedStatus", this.selectedStatus);
       this.$emit("on-category-selected");
     },
   },

@@ -13,6 +13,10 @@ export const mutations = {
     state.selectedCategories = selected;
   },
 
+  SAVE_SELECTED_STATUS(state, selected) {
+    state.selectedStatus = selected;
+  },
+
   SAVE_CELL_UPDATES(state, payload) {
     const colId = payload.colId;
     let dataToUpdate = {

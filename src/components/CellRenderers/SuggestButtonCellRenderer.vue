@@ -23,7 +23,6 @@ export default Vue.extend({
   data: function () {
     return {
       cellValue: null,
-      cellChanges: false,
     };
   },
   computed: {

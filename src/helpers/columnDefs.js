@@ -7,6 +7,9 @@ export let NOT_REVIEWED_COLS = [
     sortable: true,
     maxWidth: 250,
     filter: true,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
     unSortIcon: true,
   },
   {
@@ -26,11 +29,17 @@ export let NOT_REVIEWED_COLS = [
     sortable: true,
     unSortIcon: true,
     filter: true,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
   },
   {
     field: "text",
     filter: true,
     width: 300,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
   },
   {
     field: "published_at",
@@ -56,6 +65,9 @@ export let REVIEWED_COLS = [
     maxWidth: 250,
     filter: true,
     unSortIcon: true,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
   },
   {
     field: "sentiment",
@@ -74,17 +86,29 @@ export let REVIEWED_COLS = [
     sortable: true,
     unSortIcon: true,
     filter: true,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
   },
   {
     field: "status",
     sortable: true,
     unSortIcon: true,
     editable: false,
+    filter: "agTextColumnFilter",
+    filterParams: {
+      filterOptions: ["contains"],
+    },
+
     cellRendererFramework: "StatusCellRenderer",
   },
   {
     field: "text",
     filter: true,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
+
     width: 300,
   },
   {

@@ -38,43 +38,45 @@
             </v-col>
           </v-row>
           <v-row>
-            <div class="example-wrapper">
-              <!--                <button @click="getSelectedRows()">Get Selected Rows</button>-->
-              <ag-grid-vue
-                style="height: 100%"
-                class="ag-theme-material"
-                :columnDefs="columnDefs"
-                :gridOptions="gridOptions"
-                @grid-ready="onGridReady"
-                :defaultColDef="defaultColDef"
-                :rowModelType="rowModelType"
-                :paginationPageSize="paginationPageSize"
-                :cacheOverflowSize="cacheOverflowSize"
-                :maxConcurrentDatasourceRequests="
-                  maxConcurrentDatasourceRequests
-                "
-                :infiniteInitialRowCount="infiniteInitialRowCount"
-                :maxBlocksInCache="maxBlocksInCache"
-                :pagination="true"
-                :getRowNodeId="getRowNodeId"
-                :cacheBlockSize="cacheBlockSize"
-                @cell-value-changed="onCellValueChanged"
-                :context="context"
-                :undoRedoCellEditing="undoRedoCellEditing"
-                :undoRedoCellEditingLimit="undoRedoCellEditingLimit"
-                :enableCellChangeFlash="true"
-                @first-data-rendered="onFirstDataRendered"
-                domLayout="autoHeight"
-              >
-                <!--                  @data-model-changed="dataModelChanged"-->
-                <!--                  :isExternalFilterPresent="isExternalFilterPresent"-->
-                <!--                  :doesExternalFilterPass="doesExternalFilterPass"-->
-                <!--                  :enableRangeSelection="true"-->
-                <!--                  :enableFillHandle="true"-->
-                <!--                  :components="frameworkComponents"-->
-                <!--                  @on-row-data-changed="onRowDataChanged"-->
-              </ag-grid-vue>
-            </div>
+            <v-col>
+              <div class="example-wrapper">
+                <!--                <button @click="getSelectedRows()">Get Selected Rows</button>-->
+                <ag-grid-vue
+                  style="height: 100%"
+                  class="ag-theme-material"
+                  :columnDefs="columnDefs"
+                  :gridOptions="gridOptions"
+                  @grid-ready="onGridReady"
+                  :defaultColDef="defaultColDef"
+                  :rowModelType="rowModelType"
+                  :paginationPageSize="paginationPageSize"
+                  :cacheOverflowSize="cacheOverflowSize"
+                  :maxConcurrentDatasourceRequests="
+                    maxConcurrentDatasourceRequests
+                  "
+                  :infiniteInitialRowCount="infiniteInitialRowCount"
+                  :maxBlocksInCache="maxBlocksInCache"
+                  :pagination="true"
+                  :getRowNodeId="getRowNodeId"
+                  :cacheBlockSize="cacheBlockSize"
+                  @cell-value-changed="onCellValueChanged"
+                  :context="context"
+                  :undoRedoCellEditing="undoRedoCellEditing"
+                  :undoRedoCellEditingLimit="undoRedoCellEditingLimit"
+                  :enableCellChangeFlash="true"
+                  @first-data-rendered="onFirstDataRendered"
+                  domLayout="autoHeight"
+                >
+                  <!--                  @data-model-changed="dataModelChanged"-->
+                  <!--                  :isExternalFilterPresent="isExternalFilterPresent"-->
+                  <!--                  :doesExternalFilterPass="doesExternalFilterPass"-->
+                  <!--                  :enableRangeSelection="true"-->
+                  <!--                  :enableFillHandle="true"-->
+                  <!--                  :components="frameworkComponents"-->
+                  <!--                  @on-row-data-changed="onRowDataChanged"-->
+                </ag-grid-vue>
+              </div>
+            </v-col>
           </v-row>
         </v-container>
       </v-col>
@@ -86,11 +88,9 @@
 import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
 import SentimentCellRenderer from "@/components/CellRenderers/SentimentCellRenderer";
-// import SuggestButtonCellRenderer from "@/components/CellRenderers/SuggestButtonCellRenderer";
 import ReviewFilters from "@/components/ReviewFilters";
 import { applyFilters, applySort } from "@/helpers/utils";
 import { HISTORY_SIZE } from "@/helpers/constants";
-// import CancelButtonCellRenderer from "@/components/CellRenderers/CancelButtonCellRenderer";
 import { NOT_REVIEWED_COLS, REVIEWED_COLS } from "@/helpers/columnDefs";
 import StatusCellRenderer from "@/components/CellRenderers/StatusCellRenderer";
 
@@ -168,27 +168,6 @@ export default {
             return REVIEWED_COLS;
           },
         },
-        {
-          name: "Rejected",
-          id: "rejected",
-          filter(store) {
-            store.commit("SET_STATUS_TYPE", "rejected");
-          },
-        },
-        {
-          name: "Approved",
-          id: "approved",
-          filter(store) {
-            store.commit("SET_STATUS_TYPE", "approved");
-          },
-        },
-        {
-          name: "All",
-          id: "all",
-          filter(store) {
-            store.commit("SET_STATUS_TYPE", "all");
-          },
-        },
       ],
 
       undoSize: 0,
@@ -228,27 +207,6 @@ export default {
     onCellValueChanged(params) {
       this.undoSize = params.api.getCurrentUndoSize();
       this.redoSize = params.api.getCurrentRedoSize();
-      // var colId = params.column.getId();
-      // console.log(params);
-      // const par = { columns: ["button"] };
-      // const instances = this.gridApi.getCellRendererInstances(par);
-      // instances.forEach((instance) => {
-      //   if (instance.getFrameworkComponentInstance) {
-      //     instance.getFrameworkComponentInstance().setChanged(true);
-      //   } else {
-      //     instance.setChanged(true);
-      //   }
-      // });
-      // params.api.refreshCells();
-      // if (colId === "sentiment") {
-      // var selectedCountry = params.data.country;
-      // var selectedCity = params.data.city;
-      // var allowedCities = countyToCityMap(selectedCountry);
-      // var cityMismatch = allowedCities.indexOf(selectedCity) < 0;
-      // if (cityMismatch) {
-      //   params.node.setDataValue("city", null);
-      // }
-      // }
     },
 
     undo() {
@@ -278,15 +236,27 @@ export default {
       alert(text);
     },
 
-    // isExternalFilterPresent() {
-    //   console.log("isExternalFilterPresent");
-    //   return true;
-    // },
-    //
-    // // eslint-disable-next-line no-unused-vars
-    // doesExternalFilterPass(node) {
-    //   return true;
-    // },
+    // var colId = params.column.getId();
+    // console.log(params);
+    // const par = { columns: ["button"] };
+    // const instances = this.gridApi.getCellRendererInstances(par);
+    // instances.forEach((instance) => {
+    //   if (instance.getFrameworkComponentInstance) {
+    //     instance.getFrameworkComponentInstance().setChanged(true);
+    //   } else {
+    //     instance.setChanged(true);
+    //   }
+    // });
+    // params.api.refreshCells();
+    // if (colId === "sentiment") {
+    // var selectedCountry = params.data.country;
+    // var selectedCity = params.data.city;
+    // var allowedCities = countyToCityMap(selectedCountry);
+    // var cityMismatch = allowedCities.indexOf(selectedCity) < 0;
+    // if (cityMismatch) {
+    //   params.node.setDataValue("city", null);
+    // }
+    // }
 
     async onGridReady(params) {
       const getSelectedCategories = () => {

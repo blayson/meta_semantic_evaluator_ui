@@ -80,22 +80,22 @@
         </v-chip>
       </v-chip-group>
 
-      <v-chip-group
-        v-model="selectedStatus"
-        column
-        multiple
-        @change="onStatusSelected()"
-      >
-        <v-chip
-          filter
-          outlined
-          v-for="item in reviewStatus"
-          :key="item.id"
-          v-bind:value="item.id"
-        >
-          {{ item.name }}
-        </v-chip>
-      </v-chip-group>
+      <!--      <v-chip-group-->
+      <!--        v-model="selectedStatus"-->
+      <!--        column-->
+      <!--        multiple-->
+      <!--        @change="onStatusSelected()"-->
+      <!--      >-->
+      <!--        <v-chip-->
+      <!--          filter-->
+      <!--          outlined-->
+      <!--          v-for="item in reviewStatus"-->
+      <!--          :key="item.id"-->
+      <!--          v-bind:value="item.id"-->
+      <!--        >-->
+      <!--          {{ item.name }}-->
+      <!--        </v-chip>-->
+      <!--      </v-chip-group>-->
     </v-card-text>
   </v-card>
 </template>
@@ -136,10 +136,10 @@ export default {
       this.$store.dispatch("setSelectedCategories", this.selectedCategories);
       this.$emit("on-category-selected");
     },
-    onStatusSelected() {
-      this.$store.dispatch("setSelectedStatus", this.selectedStatus);
-      this.$emit("on-category-selected");
-    },
+    // onStatusSelected() {
+    //   this.$store.dispatch("setSelectedStatus", this.selectedStatus);
+    //   this.$emit("on-category-selected");
+    // },
   },
   beforeMount() {
     this.$store.dispatch("loadProductCategories");

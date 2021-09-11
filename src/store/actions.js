@@ -79,9 +79,9 @@ export const actions = {
     commit("SAVE_SELECTED_CATEGORIES", selectedCategories);
   },
 
-  setSelectedStatus({ commit }, selectedStatus) {
-    commit("SAVE_SELECTED_STATUS", selectedStatus);
-  },
+  // setSelectedStatus({ commit }, selectedStatus) {
+  //   commit("SAVE_SELECTED_STATUS", selectedStatus);
+  // },
 
   setTab({ commit }, tab) {
     commit("SET_TAB", tab);

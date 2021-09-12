@@ -36,12 +36,25 @@ export const actions = {
     }
   },
 
-  async submitUpdates({ commit }, payload) {
+  async submitSuggestions({ commit }, payload) {
+    try {
+      const review_id = payload.review_id;
+      delete payload.review_id;
+      delete payload.index;
+
+      await ReviewService.submitSuggestions(review_id, payload, true);
+    } catch (e) {
+      commit("SAVE_ERROR", "reviews", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+
+  async submitNoSuggestions({ commit }, payload) {
     try {
       const review_id = payload.review_id;
       delete payload.review_id;
 
-      await ReviewService.submitUpdates(review_id, payload);
+      await ReviewService.submitSuggestions(review_id, payload, false);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
@@ -82,6 +95,16 @@ export const actions = {
   // setSelectedStatus({ commit }, selectedStatus) {
   //   commit("SAVE_SELECTED_STATUS", selectedStatus);
   // },
+
+  // eslint-disable-next-line no-unused-vars
+  async deleteSuggestions({ commit }, payload) {
+    try {
+      await ReviewService.deleteSuggestion(payload.suggestions_id);
+    } catch (e) {
+      console.log("sddd");
+      throw e;
+    }
+  },
 
   setTab({ commit }, tab) {
     commit("SET_TAB", tab);

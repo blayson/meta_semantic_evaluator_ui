@@ -40,7 +40,6 @@
           <v-row>
             <v-col>
               <div class="example-wrapper">
-                <!--                <button @click="getSelectedRows()">Get Selected Rows</button>-->
                 <ag-grid-vue
                   style="height: 100%"
                   class="ag-theme-material"
@@ -109,7 +108,7 @@ export default {
   computed: {
     ...mapState({
       selectedProductCategories: "selectedCategories",
-      statusDataType: "statusDataType",
+      dataStatus: "dataStatus",
       selectedStatus: "selectedStatus",
     }),
 
@@ -185,6 +184,18 @@ export default {
     },
 
     onDateSortChanged(dateSort) {
+      console.log(this.columnApi.getColumn("suggestion_time"));
+      if (this.columnApi.getColumn("suggestion_time") !== null) {
+        this.columnApi.applyColumnState({
+          state: [
+            {
+              colId: "suggestion_time",
+              sort: dateSort === 1 ? "asc" : "desc",
+            },
+          ],
+        });
+        return;
+      }
       this.columnApi.applyColumnState({
         state: [
           {
@@ -263,8 +274,8 @@ export default {
         return this.selectedProductCategories;
       };
 
-      const getStatusDataType = () => {
-        return this.statusDataType;
+      const getDataStatus = () => {
+        return this.dataStatus;
       };
 
       // const getSelectedStatus = () => {
@@ -305,7 +316,7 @@ export default {
           const filterParams = applyFilters(
             params.filterModel,
             getSelectedCategories(),
-            getStatusDataType()
+            getDataStatus()
           );
 
           await getData({
@@ -343,15 +354,6 @@ export default {
 
       params.api.setDatasource(dataSource);
     },
-
-    // getSelectedRows() {
-    //   const selectedNodes = this.gridApi.getSelectedNodes();
-    //   const selectedData = selectedNodes.map((node) => node.data);
-    //   const selectedDataStringPresentation = selectedData
-    //     .map((node) => `${node.make} ${node.model}`)
-    //     .join(", ");
-    //   alert(`Selected nodes: ${selectedDataStringPresentation}`);
-    // },
 
     updateRowData() {
       return Object.freeze(this.copyRowData(this.$store.getters.allReviews));

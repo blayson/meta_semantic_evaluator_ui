@@ -4,12 +4,12 @@
       <v-btn elevation="1" small tile loading disabled></v-btn>
     </div>
     <div v-else-if="isDataUpdated()">
-      <v-btn @click="invokeParentMethod()" color="primary" elevation="1" small
+      <v-btn @click="submitSuggestion()" color="primary" elevation="1" small
         ><v-icon>mdi-check</v-icon></v-btn
       >
     </div>
     <div v-else>
-      <v-btn @click="invokeParentMethod()" color="accent" elevation="1" small
+      <v-btn @click="submitSuggestion()" color="accent" elevation="1" small
         ><v-icon>mdi-check</v-icon></v-btn
       >
     </div>
@@ -55,7 +55,7 @@ export default Vue.extend({
       return updated;
     },
 
-    invokeParentMethod() {
+    submitSuggestion() {
       // `Row: ${this.params.node.rowIndex}, Col: ${this.params.colDef.headerName}`;
       const id_arr = this.cellValue.split("|");
       const [review_id, feature_id] = id_arr;
@@ -65,26 +65,21 @@ export default Vue.extend({
       );
 
       if (!this.isDataUpdated()) {
-        alert("There is no updated data in this row");
-        // this.$store.dispatch("submitUpdates", {
-        //   review_id,
-        //   feature_id,
-        //   ...updatedData,
-        // });
+        this.$store.dispatch("submitNoSuggestions", {
+          review_id,
+          feature_id,
+        });
+        alert("Data approved");
         return;
       }
 
-      this.$store.dispatch("submitUpdates", {
+      this.$store.dispatch("submitSuggestions", {
         review_id,
         feature_id,
         ...updatedData,
       });
 
       this.params.api.refreshInfiniteCache();
-
-      console.log("updated data: " + updatedData);
-      console.log("review data: " + review_id);
-      console.log("feature data: " + feature_id);
 
       this.params.context.componentParent.methodFromParent(
         this.params.node.rowIndex

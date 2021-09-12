@@ -1,5 +1,4 @@
 import { SRE_TOKEN } from "@/helpers/constants";
-import { NOT_REVIEWED_COLS, REVIEWED_COLS } from "@/helpers/columnDefs";
 
 function parseUser() {
   const token = localStorage.getItem(SRE_TOKEN);
@@ -56,46 +55,17 @@ export const state = {
   selectedStatus: [],
   reviewStatus: [
     {
-      name: "Not Reviewed",
-      id: "notReviewed",
-      filter(store) {
-        store.commit("SET_STATUS_TYPE", "notReviewed");
-      },
-      setColDefs() {
-        return NOT_REVIEWED_COLS;
-      },
-    },
-    {
-      name: "Reviewed",
-      id: "reviewed",
-      filter(store) {
-        store.commit("SET_STATUS_TYPE", "reviewed");
-      },
-      setColDefs() {
-        return REVIEWED_COLS;
-      },
-    },
-    {
       name: "Rejected",
       id: "rejected",
-      filter(store) {
-        store.commit("SET_STATUS_TYPE", "rejected");
-      },
     },
     {
       name: "Approved",
       id: "approved",
-      filter(store) {
-        store.commit("SET_STATUS_TYPE", "approved");
-      },
     },
     {
-      name: "All",
-      id: "all",
-      filter(store) {
-        store.commit("SET_STATUS_TYPE", "all");
-      },
+      name: "Pending",
+      id: "pending",
     },
   ],
-  statusDataType: "",
+  dataStatus: "",
 };

@@ -104,6 +104,13 @@ export const applySort = function (sortModel) {
             sortParams += `&sort=date ${model.sort}`;
           }
           break;
+        case "suggestion_time":
+          if (sortParams) {
+            sortParams += `,date ${model.sort}`;
+          } else {
+            sortParams += `&sort=date ${model.sort}`;
+          }
+          break;
         default:
           sortParams += "";
       }
@@ -115,7 +122,7 @@ export const applySort = function (sortModel) {
 export const applyFilters = function (
   filterModel,
   selectedCategories,
-  statusDataType
+  dataStatus
 ) {
   let filterParams = "";
   if (filterModel) {
@@ -139,8 +146,8 @@ export const applyFilters = function (
       }
     }
 
-  if (statusDataType) {
-    filterParams += `&status=${statusDataType}`;
+  if (dataStatus) {
+    filterParams += `&status=${dataStatus}`;
   }
 
   return filterParams;

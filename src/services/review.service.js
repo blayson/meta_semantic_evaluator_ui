@@ -13,9 +13,13 @@ const ReviewService = {
     return await http.get(url);
   },
 
-  submitUpdates: async function (review_id, payload) {
-    const url = `${this.baseUrl}/${review_id}/updates/submit`;
+  submitSuggestions: async function (review_id, payload, changes) {
+    let url = `${this.baseUrl}/${review_id}/suggestions/submit?changes=${changes}`;
     return await http.post(url, payload);
+  },
+  deleteSuggestion: async function (suggestions_id) {
+    let url = `${this.baseUrl}/suggestions/${suggestions_id}/delete`;
+    return await http.delete(url);
   },
 };
 

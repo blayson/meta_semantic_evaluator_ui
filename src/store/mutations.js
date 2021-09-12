@@ -92,6 +92,6 @@ export const mutations = {
     state.status.auth.loggedIn = false;
   },
   SET_STATUS_TYPE(state, type) {
-    state.statusDataType = type;
+    state.dataStatus = type;
   },
 };

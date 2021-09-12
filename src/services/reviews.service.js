@@ -1,6 +1,6 @@
 import http from "@/services/api";
 
-const ReviewService = {
+const ReviewsService = {
   baseUrl: "/reviews",
 
   getReviews: async function (payload) {
@@ -23,4 +23,4 @@ const ReviewService = {
   },
 };
 
-export default ReviewService;
+export default ReviewsService;

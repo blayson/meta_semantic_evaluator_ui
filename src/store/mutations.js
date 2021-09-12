@@ -1,4 +1,4 @@
-import { HISTORY_SIZE, TAB_MAP } from "@/helpers/constants";
+import { HISTORY_SIZE } from "@/helpers/constants";
 
 export const mutations = {
   SAVE_REVIEWS(state, reviews) {
@@ -11,10 +11,6 @@ export const mutations = {
 
   SAVE_SELECTED_CATEGORIES(state, selected) {
     state.selectedCategories = selected;
-  },
-
-  SAVE_SELECTED_STATUS(state, selected) {
-    state.selectedStatus = selected;
   },
 
   SAVE_CELL_UPDATES(state, payload) {
@@ -70,7 +66,7 @@ export const mutations = {
   },
 
   SET_TAB(state, tab) {
-    state.status.reviews.tab = TAB_MAP[tab];
+    state.selectedReviewStatusTab = tab;
   },
 
   LOGIN_SUCCESS(state, user) {
@@ -90,8 +86,5 @@ export const mutations = {
   },
   REGISTER_FAILURE(state) {
     state.status.auth.loggedIn = false;
-  },
-  SET_STATUS_TYPE(state, type) {
-    state.dataStatus = type;
   },
 };

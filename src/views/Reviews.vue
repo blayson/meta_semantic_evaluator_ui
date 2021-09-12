@@ -67,12 +67,9 @@
                   domLayout="autoHeight"
                 >
                   <!--                  @data-model-changed="dataModelChanged"-->
-                  <!--                  :isExternalFilterPresent="isExternalFilterPresent"-->
-                  <!--                  :doesExternalFilterPass="doesExternalFilterPass"-->
                   <!--                  :enableRangeSelection="true"-->
                   <!--                  :enableFillHandle="true"-->
                   <!--                  :components="frameworkComponents"-->
-                  <!--                  @on-row-data-changed="onRowDataChanged"-->
                 </ag-grid-vue>
               </div>
             </v-col>
@@ -90,7 +87,12 @@ import SentimentCellRenderer from "@/components/CellRenderers/SentimentCellRende
 import ReviewFilters from "@/components/ReviewFilters";
 import { applyFilters, applySort } from "@/helpers/utils";
 import { HISTORY_SIZE } from "@/helpers/constants";
-import { NOT_REVIEWED_COLS, REVIEWED_COLS } from "@/helpers/columnDefs";
+import {
+  DEFAULT_COL_DEFS,
+  NOT_REVIEWED_COLS,
+  REVIEWED_COLS,
+  REVIEWED_DEF_COL_DEFS,
+} from "@/helpers/columnDefs";
 import StatusCellRenderer from "@/components/CellRenderers/StatusCellRenderer";
 
 export default {
@@ -108,7 +110,7 @@ export default {
   computed: {
     ...mapState({
       selectedProductCategories: "selectedCategories",
-      dataStatus: "dataStatus",
+      selectedReviewStatusTab: "selectedReviewStatusTab",
       selectedStatus: "selectedStatus",
     }),
 
@@ -124,7 +126,7 @@ export default {
       rowBuffer: null,
       gridApi: null,
       columnApi: null,
-      columnDefs: NOT_REVIEWED_COLS,
+      columnDefs: null,
       defaultColDef: null,
       rowSelection: null,
       rowModelType: null,
@@ -150,21 +152,15 @@ export default {
         {
           name: "Not Reviewed",
           id: "notReviewed",
-          filter(store) {
-            store.commit("SET_STATUS_TYPE", "notReviewed");
-          },
-          setColDefs() {
-            return NOT_REVIEWED_COLS;
+          rowIdGetter() {
+            return (data) => data.id;
           },
         },
         {
           name: "Reviewed",
           id: "reviewed",
-          filter(store) {
-            store.commit("SET_STATUS_TYPE", "reviewed");
-          },
-          setColDefs() {
-            return REVIEWED_COLS;
+          rowIdGetter() {
+            return (data) => data.suggestions_id;
           },
         },
       ],
@@ -210,9 +206,10 @@ export default {
       this.gridApi.onFilterChanged();
     },
 
-    onFirstDataRendered() {
+    onFirstDataRendered(params) {
       this.undoSize = 0;
       this.redoSize = 0;
+      params.api.sizeColumnsToFit();
     },
 
     onCellValueChanged(params) {
@@ -230,16 +227,21 @@ export default {
       this.gridApi.redoCellEditing();
     },
 
-    setTab(tab) {
-      this.columnDefs = tab.setColDefs();
-      this.$store.dispatch("setTab", tab.id);
-      tab.filter(this.$store);
-      if (tab.id === "reviewed") {
-        this.getRowNodeId = (data) => data.suggestions_id;
-      } else if (tab.id === "notReviewed") {
-        this.getRowNodeId = (data) => data.id;
+    getColDefs() {
+      if (this.selectedReviewStatusTab === "notReviewed") {
+        return NOT_REVIEWED_COLS;
+      } else if (this.selectedReviewStatusTab === "reviewed") {
+        return REVIEWED_COLS;
       }
-      this.gridApi.onFilterChanged();
+    },
+
+    async setTab(tab) {
+      if (tab.id === this.selectedReviewStatusTab) {
+        this.gridApi.onFilterChanged();
+      }
+      await this.$store.dispatch("setTab", tab.id);
+      await this.gridApi.setColumnDefs(this.getColDefs());
+      this.getRowNodeId = tab.rowIdGetter();
     },
 
     showNotification(text) {
@@ -274,13 +276,9 @@ export default {
         return this.selectedProductCategories;
       };
 
-      const getDataStatus = () => {
-        return this.dataStatus;
+      const getSelectedReviewStatusTab = () => {
+        return this.selectedReviewStatusTab;
       };
-
-      // const getSelectedStatus = () => {
-      //   return this.selectedStatus;
-      // };
 
       const updateData = () => {
         return this.updateRowData();
@@ -316,7 +314,7 @@ export default {
           const filterParams = applyFilters(
             params.filterModel,
             getSelectedCategories(),
-            getDataStatus()
+            getSelectedReviewStatusTab()
           );
 
           await getData({
@@ -400,12 +398,11 @@ export default {
       },
     };
 
-    this.defaultColDef = {
-      minWidth: 100,
-      resizable: true,
-      editable: true,
-      flex: 1,
-    };
+    if (this.selectedReviewStatusTab === "notReviewed")
+      this.defaultColDef = DEFAULT_COL_DEFS;
+    else this.defaultColDef = REVIEWED_DEF_COL_DEFS;
+
+    this.columnDefs = this.getColDefs();
 
     // this.rowSelection = "multiple";
     this.rowModelType = "infinite";

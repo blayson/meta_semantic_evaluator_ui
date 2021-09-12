@@ -41,7 +41,6 @@ export const state = {
         end: 100,
       },
       error: false,
-      tab: 1,
     },
     // user
     auth: {
@@ -67,5 +66,5 @@ export const state = {
       id: "pending",
     },
   ],
-  dataStatus: "",
+  selectedReviewStatusTab: "notReviewed",
 };

@@ -1,8 +1,8 @@
 import SuggestButtonCellRenderer from "@/components/CellRenderers/SuggestButtonCellRenderer";
 import CancelButtonCellRenderer from "@/components/CellRenderers/DeleteButtonCellRenderer";
 
-export let NOT_REVIEWED_COLS = [
-  {
+const getFeatureCol = function (tab) {
+  const featureCol = {
     field: "feature",
     sortable: true,
     maxWidth: 250,
@@ -11,20 +11,38 @@ export let NOT_REVIEWED_COLS = [
       filterOptions: ["contains"],
     },
     unSortIcon: true,
-  },
-  {
+  };
+
+  if (tab === "reviewed") {
+    featureCol.editable = false;
+  }
+  return featureCol;
+};
+
+const getSentimentCol = function (tab) {
+  const sentimentCol = {
     field: "sentiment",
     sortable: true,
     maxWidth: 150,
     unSortIcon: true,
     colId: "sentiment",
+    editable: false,
     cellRendererFramework: "SentimentCellRenderer",
-    cellEditor: "agSelectCellEditor",
-    cellEditorParams: {
+  };
+
+  if (tab === "notReviewed") {
+    sentimentCol.editable = true;
+    sentimentCol.cellEditor = "agSelectCellEditor";
+    sentimentCol.cellEditorParams = {
       values: ["positive", "negative"],
-    },
-  },
-  {
+    };
+  }
+
+  return sentimentCol;
+};
+
+const getProductCol = function (tab) {
+  const productCol = {
     field: "product",
     sortable: true,
     unSortIcon: true,
@@ -32,90 +50,71 @@ export let NOT_REVIEWED_COLS = [
     filterParams: {
       filterOptions: ["contains"],
     },
+  };
+  if (tab === "reviewed") {
+    productCol.editable = false;
+  }
+  return productCol;
+};
+
+const textCol = {
+  field: "text",
+  filter: true,
+  width: 300,
+  editable: false,
+  filterParams: {
+    filterOptions: ["contains"],
   },
-  {
-    field: "text",
-    filter: true,
-    width: 300,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-  },
-  {
-    field: "published_at",
-    sortable: true,
-    sort: "desc",
-    hide: true,
-  },
-  {
-    field: "button",
-    maxWidth: 100,
-    valueGetter: "node.id",
-    headerName: "Submit",
-    colId: "button",
-    editable: false,
-    pinned: "right",
-    cellRendererFramework: SuggestButtonCellRenderer,
-  },
+};
+
+const publishedCol = {
+  field: "published_at",
+  sortable: true,
+  sort: "desc",
+  hide: true,
+};
+
+const buttonCol = {
+  field: "button",
+  maxWidth: 100,
+  valueGetter: "node.id",
+  headerName: "Submit",
+  colId: "button",
+  editable: false,
+  pinned: "right",
+  cellRendererFramework: SuggestButtonCellRenderer,
+};
+
+export const NOT_REVIEWED_COLS = [
+  getFeatureCol("notReviewed"),
+  getSentimentCol("notReviewed"),
+  getProductCol("notReviewed"),
+  textCol,
+  publishedCol,
+  buttonCol,
 ];
 
-export let REVIEWED_COLS = [
+export const REVIEWED_COLS = [
   {
     field: "id",
     hide: true,
   },
-  {
-    field: "feature",
-    sortable: true,
-    maxWidth: 250,
-    filter: true,
-    unSortIcon: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-  },
-  {
-    field: "sentiment",
-    sortable: true,
-    maxWidth: 150,
-    unSortIcon: true,
-    colId: "sentiment",
-    cellRendererFramework: "SentimentCellRenderer",
-    cellEditor: "agSelectCellEditor",
-    cellEditorParams: {
-      values: ["positive", "negative"],
-    },
-  },
-  {
-    field: "product",
-    sortable: true,
-    unSortIcon: true,
-    filter: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-  },
+  getFeatureCol("reviewed"),
+  getSentimentCol("reviewed"),
+  getProductCol("reviewed"),
   {
     field: "status",
     sortable: true,
     unSortIcon: true,
     editable: false,
+    maxWidth: 150,
     filter: "agTextColumnFilter",
     filterParams: {
       filterOptions: ["contains"],
     },
-
     cellRendererFramework: "StatusCellRenderer",
   },
-  {
-    field: "text",
-    filter: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-
-    width: 300,
-  },
+  textCol,
   {
     field: "suggestion_time",
     sortable: true,
@@ -134,72 +133,18 @@ export let REVIEWED_COLS = [
   },
 ];
 
-export let ADMIN_COLS = [
-  {
-    field: "feature",
-    sortable: true,
-    maxWidth: 250,
-    filter: true,
-    unSortIcon: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-  },
-  {
-    field: "sentiment",
-    sortable: true,
-    maxWidth: 150,
-    unSortIcon: true,
-    colId: "sentiment",
-    cellRendererFramework: "SentimentCellRenderer",
-    cellEditor: "agSelectCellEditor",
-    cellEditorParams: {
-      values: ["positive", "negative"],
-    },
-  },
-  {
-    field: "product",
-    sortable: true,
-    unSortIcon: true,
-    filter: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-  },
-  {
-    field: "status",
-    sortable: true,
-    unSortIcon: true,
-    editable: false,
-    filter: "agTextColumnFilter",
-    filterParams: {
-      filterOptions: ["contains"],
-    },
+export const ADMIN_COLS = [];
 
-    cellRendererFramework: "StatusCellRenderer",
-  },
-  {
-    field: "text",
-    filter: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
+export const DEFAULT_COL_DEFS = {
+  minWidth: 100,
+  resizable: true,
+  editable: true,
+  flex: 1,
+};
 
-    width: 300,
-  },
-  {
-    field: "published_at",
-    sortable: true,
-    hide: true,
-  },
-  {
-    field: "button",
-    maxWidth: 100,
-    valueGetter: "node.id",
-    headerName: "Delete",
-    colId: "button",
-    editable: false,
-    pinned: "right",
-    cellRendererFramework: CancelButtonCellRenderer,
-  },
-];
+export const REVIEWED_DEF_COL_DEFS = {
+  minWidth: 100,
+  resizable: true,
+  editable: false,
+  flex: 1,
+};

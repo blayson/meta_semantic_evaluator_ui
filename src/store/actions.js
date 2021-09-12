@@ -1,5 +1,6 @@
-import ReviewService from "@/services/review.service";
+import ReviewsService from "@/services/reviews.service";
 import AuthService from "@/services/auth.service";
+import SuggestionsService from "@/services/suggestions.service";
 
 export const actions = {
   async loadReviews({ commit }, payload) {
@@ -13,7 +14,7 @@ export const actions = {
           filter: "",
         };
       }
-      let response = await ReviewService.getReviews(payload);
+      let response = await ReviewsService.getReviews(payload);
       commit("SAVE_REVIEWS", response.data.data);
       commit("SAVE_RESPONSE", {
         total: response.data.total,
@@ -28,7 +29,7 @@ export const actions = {
 
   async loadProductCategories({ commit }) {
     try {
-      let response = await ReviewService.getProductCategories();
+      let response = await ReviewsService.getProductCategories();
       commit("SAVE_CATEGORIES", response.data);
     } catch (e) {
       commit("SAVE_ERROR", "categories", true);
@@ -42,7 +43,7 @@ export const actions = {
       delete payload.review_id;
       delete payload.index;
 
-      await ReviewService.submitSuggestions(review_id, payload, true);
+      await ReviewsService.submitSuggestions(review_id, payload, true);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
@@ -54,7 +55,7 @@ export const actions = {
       const review_id = payload.review_id;
       delete payload.review_id;
 
-      await ReviewService.submitSuggestions(review_id, payload, false);
+      await ReviewsService.submitSuggestions(review_id, payload, false);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
@@ -92,16 +93,11 @@ export const actions = {
     commit("SAVE_SELECTED_CATEGORIES", selectedCategories);
   },
 
-  // setSelectedStatus({ commit }, selectedStatus) {
-  //   commit("SAVE_SELECTED_STATUS", selectedStatus);
-  // },
-
-  // eslint-disable-next-line no-unused-vars
   async deleteSuggestions({ commit }, payload) {
     try {
-      await ReviewService.deleteSuggestion(payload.suggestions_id);
+      await SuggestionsService.deleteSuggestion(payload.suggestions_id);
     } catch (e) {
-      console.log("sddd");
+      commit("SAVE_ERROR", "suggestions", true);
       throw e;
     }
   },

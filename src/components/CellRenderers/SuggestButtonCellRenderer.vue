@@ -3,13 +3,12 @@
     <div v-if="!valueExist()">
       <v-btn elevation="1" small tile loading disabled></v-btn>
     </div>
-    <div v-else-if="isDataUpdated()">
-      <v-btn @click="submitSuggestion()" color="primary" elevation="1" small
-        ><v-icon>mdi-check</v-icon></v-btn
-      >
-    </div>
     <div v-else>
-      <v-btn @click="submitSuggestion()" color="accent" elevation="1" small
+      <v-btn
+        @click="submitSuggestion()"
+        :color="isDataUpdated() ? 'primary' : 'accent'"
+        elevation="1"
+        small
         ><v-icon>mdi-check</v-icon></v-btn
       >
     </div>
@@ -55,8 +54,7 @@ export default Vue.extend({
       return updated;
     },
 
-    submitSuggestion() {
-      // `Row: ${this.params.node.rowIndex}, Col: ${this.params.colDef.headerName}`;
+    async submitSuggestion() {
       const id_arr = this.cellValue.split("|");
       const [review_id, feature_id] = id_arr;
 
@@ -65,7 +63,7 @@ export default Vue.extend({
       );
 
       if (!this.isDataUpdated()) {
-        this.$store.dispatch("submitNoSuggestions", {
+        await this.$store.dispatch("submitNoSuggestions", {
           review_id,
           feature_id,
         });
@@ -73,13 +71,13 @@ export default Vue.extend({
         return;
       }
 
-      this.$store.dispatch("submitSuggestions", {
+      await this.$store.dispatch("submitSuggestions", {
         review_id,
         feature_id,
         ...updatedData,
       });
 
-      this.params.api.refreshInfiniteCache();
+      await this.params.api.refreshInfiniteCache();
 
       this.params.context.componentParent.methodFromParent(
         this.params.node.rowIndex

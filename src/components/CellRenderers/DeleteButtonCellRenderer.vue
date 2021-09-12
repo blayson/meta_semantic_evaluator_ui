@@ -3,8 +3,15 @@
     <div v-if="!valueExist()">
       <v-btn elevation="1" small tile loading disabled></v-btn>
     </div>
-    <div v-else-if="this.params.node.data.status === 'pending'">
-      <v-btn @click="deleteSuggestion()" color="red" elevation="1" small dark
+    <div v-else>
+      <v-btn
+        @click="deleteSuggestion()"
+        color="red"
+        elevation="1"
+        small
+        dark
+        tile
+        :disabled="!isStatusPending()"
         ><v-icon>mdi-delete</v-icon></v-btn
       >
     </div>
@@ -32,19 +39,23 @@ export default Vue.extend({
       return this.suggestionsId !== undefined;
     },
 
-    deleteSuggestion() {
+    isStatusPending() {
+      return this.params.node.data.status === "pending";
+    },
+
+    async deleteSuggestion() {
       // `Row: ${this.params.node.rowIndex}, Col: ${this.params.colDef.headerName}`;
       const id_arr = this.params.node.data.id.split("|");
       const [review_id, feature_id] = id_arr;
       const suggestions_id = this.suggestionsId;
 
-      this.$store.dispatch("deleteSuggestions", {
+      await this.$store.dispatch("deleteSuggestions", {
         review_id,
         feature_id,
         suggestions_id,
       });
 
-      this.params.api.refreshInfiniteCache();
+      await this.params.api.refreshInfiniteCache();
       alert("deleted: " + suggestions_id);
     },
 

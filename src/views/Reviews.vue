@@ -376,18 +376,9 @@ export default {
 
     this.gridOptions = {
       // eslint-disable-next-line no-unused-vars
-      onRowEditingStarted: function (event) {
-        console.log("never called - not doing row editing");
-      },
-      // eslint-disable-next-line no-unused-vars
-      onRowEditingStopped: function (event) {
-        console.log("never called - not doing row editing");
-      },
-      // eslint-disable-next-line no-unused-vars
       onCellEditingStarted: function (event) {
         console.log("cellEditingStarted");
       },
-      // eslint-disable-next-line no-unused-vars
       onCellEditingStopped: function (event) {
         commit("SAVE_CELL_UPDATES", {
           index: event.rowIndex,
@@ -398,13 +389,23 @@ export default {
       },
     };
 
-    if (this.selectedReviewStatusTab === "notReviewed")
-      this.defaultColDef = DEFAULT_COL_DEFS;
-    else this.defaultColDef = REVIEWED_DEF_COL_DEFS;
+    this.defaultColDef =
+      this.selectedReviewStatusTab === "notReviewed"
+        ? DEFAULT_COL_DEFS
+        : REVIEWED_DEF_COL_DEFS;
 
     this.columnDefs = this.getColDefs();
+    if (this.currentUser.user.user_roles_id === 1) {
+      // TODO: change to 2 (admin)
+      this.tabs.push({
+        name: "For approve",
+        id: "forApprove",
+        rowIdGetter() {
+          return (data) => data.suggestions_id;
+        },
+      });
+    }
 
-    // this.rowSelection = "multiple";
     this.rowModelType = "infinite";
     this.cacheBlockSize = 100;
     this.paginationPageSize = 10;

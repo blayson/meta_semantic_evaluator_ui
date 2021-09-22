@@ -39,11 +39,9 @@ export const actions = {
 
   async submitSuggestions({ commit }, payload) {
     try {
-      const review_id = payload.review_id;
-      delete payload.review_id;
       delete payload.index;
 
-      await ReviewsService.submitSuggestions(review_id, payload, true);
+      await SuggestionsService.submitSuggestions(payload, true);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
@@ -52,10 +50,7 @@ export const actions = {
 
   async submitNoSuggestions({ commit }, payload) {
     try {
-      const review_id = payload.review_id;
-      delete payload.review_id;
-
-      await ReviewsService.submitSuggestions(review_id, payload, false);
+      await SuggestionsService.submitSuggestions(payload, false);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);

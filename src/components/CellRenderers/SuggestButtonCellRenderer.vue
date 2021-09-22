@@ -56,7 +56,7 @@ export default Vue.extend({
 
     async submitSuggestion() {
       const id_arr = this.cellValue.split("|");
-      const [review_id, feature_id] = id_arr;
+      const reviews_id = id_arr[0];
 
       let updatedData = this.$store.getters.getUpdatedDataHistory(
         this.params.node.rowIndex
@@ -64,16 +64,14 @@ export default Vue.extend({
 
       if (!this.isDataUpdated()) {
         await this.$store.dispatch("submitNoSuggestions", {
-          review_id,
-          feature_id,
+          reviews_id,
         });
         alert("Data approved");
         return;
       }
 
       await this.$store.dispatch("submitSuggestions", {
-        review_id,
-        feature_id,
+        reviews_id,
         ...updatedData,
       });
 

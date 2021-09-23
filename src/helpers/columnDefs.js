@@ -1,5 +1,9 @@
 import SuggestButtonCellRenderer from "@/components/CellRenderers/SuggestButtonCellRenderer";
-import CancelButtonCellRenderer from "@/components/CellRenderers/DeleteButtonCellRenderer";
+import CancelButtonCellRenderer from "@/components/CellRenderers/CancelButtonCellRenderer";
+import AdminButtonCellRenderer from "@/components/CellRenderers/AdminButtonCellRenderer";
+import AdminFeatureCellRenderer from "@/components/CellRenderers/AdminFeatureCellRenderer";
+import AdminSentimentCellRenderer from "@/components/CellRenderers/AdminSentimentCellRenderer";
+import AdminProductCellRenderer from "@/components/CellRenderers/AdminProductCellRenderer";
 
 const getFeatureCol = function (tab) {
   const featureCol = {
@@ -15,6 +19,9 @@ const getFeatureCol = function (tab) {
 
   if (tab === "reviewed") {
     featureCol.editable = false;
+  } else if (tab === "admin") {
+    featureCol.editable = false;
+    featureCol.cellRendererFramework = AdminFeatureCellRenderer;
   }
   return featureCol;
 };
@@ -36,6 +43,8 @@ const getSentimentCol = function (tab) {
     sentimentCol.cellEditorParams = {
       values: ["positive", "negative"],
     };
+  } else if (tab === "admin") {
+    sentimentCol.cellRendererFramework = AdminSentimentCellRenderer;
   }
 
   return sentimentCol;
@@ -53,6 +62,9 @@ const getProductCol = function (tab) {
   };
   if (tab === "reviewed") {
     productCol.editable = false;
+  } else if (tab === "admin") {
+    productCol.editable = false;
+    productCol.cellRendererFramework = AdminProductCellRenderer;
   }
   return productCol;
 };
@@ -125,7 +137,7 @@ export const REVIEWED_COLS = [
     field: "button",
     maxWidth: 100,
     valueGetter: "node.id",
-    headerName: "Delete",
+    headerName: "Cancel",
     colId: "button",
     editable: false,
     pinned: "right",
@@ -133,7 +145,21 @@ export const REVIEWED_COLS = [
   },
 ];
 
-export const ADMIN_COLS = [];
+export const ADMIN_COLS = [
+  getFeatureCol("admin"),
+  getSentimentCol("admin"),
+  getProductCol("admin"),
+  {
+    field: "button",
+    maxWidth: 100,
+    valueGetter: "node.id",
+    headerName: "Approve",
+    colId: "button",
+    editable: false,
+    pinned: "right",
+    cellRendererFramework: AdminButtonCellRenderer,
+  },
+];
 
 export const DEFAULT_COL_DEFS = {
   minWidth: 100,

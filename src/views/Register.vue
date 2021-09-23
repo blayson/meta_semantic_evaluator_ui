@@ -15,6 +15,8 @@
                 :error-messages="errors"
                 label="E-mail"
                 v-model="userData.email"
+                @focus="validate()"
+                @input="validate()"
                 required
               ></v-text-field>
             </validation-provider>
@@ -32,6 +34,8 @@
                 :error-messages="errors"
                 label="Name"
                 v-model="userData.name"
+                @focus="validate()"
+                @input="validate()"
                 required
               ></v-text-field>
             </validation-provider>
@@ -49,6 +53,8 @@
                 :error-messages="errors"
                 label="Password"
                 v-model="userData.password1"
+                @focus="validate()"
+                @input="validate()"
                 required
               ></v-text-field>
             </validation-provider>
@@ -66,6 +72,8 @@
                 :error-messages="errors"
                 label="Password again"
                 v-model="userData.password2"
+                @focus="validate()"
+                @input="validate()"
                 required
               ></v-text-field>
             </validation-provider>
@@ -146,6 +154,10 @@ export default {
     }
   },
   methods: {
+    validate() {
+      // this.$nextTick(() => this.$refs.observer.validate());
+      this.$refs.observer.validate();
+    },
     async doRegister() {
       this.$refs.observer.validate();
       const { password1, password2 } = this.userData;

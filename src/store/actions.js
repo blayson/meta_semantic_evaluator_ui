@@ -23,6 +23,30 @@ export const actions = {
       });
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
+      // throw new Error(`API ${e}`);
+    }
+  },
+
+  async loadForApprove({ commit }, payload) {
+    /** Vuex action to load reviews from API */
+    try {
+      if (!payload) {
+        payload = {
+          start: 0,
+          end: 100,
+          sort: "",
+          filter: "",
+        };
+      }
+      let response = await SuggestionsService.getSuggestionsForApprove(payload);
+      commit("SAVE_REVIEWS", response.data.data);
+      commit("SAVE_RESPONSE", {
+        total: response.data.total,
+        start: response.data.start,
+        end: response.data.end,
+      });
+    } catch (e) {
+      commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
     }
   },

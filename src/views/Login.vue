@@ -13,6 +13,8 @@
               <v-text-field
                 v-model="user.email"
                 :error-messages="errors"
+                @focus="validate()"
+                @input="validate()"
                 label="E-mail"
                 required
               ></v-text-field>
@@ -29,6 +31,8 @@
               <v-text-field
                 v-model="user.password"
                 :error-messages="errors"
+                @focus="validate()"
+                @input="validate()"
                 label="Password"
                 type="Password"
                 required
@@ -110,9 +114,12 @@ export default {
   },
 
   methods: {
+    validate() {
+      // this.$nextTick(() => this.$refs.observer.validate());
+      this.$refs.observer.validate();
+    },
     async doLogin() {
       await this.$refs.observer.validate();
-
       try {
         if (this.user.email && this.user.password) {
           let formData = new FormData();

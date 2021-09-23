@@ -20,6 +20,7 @@
 
 <script>
 import Vue from "vue";
+import { statusMap } from "@/helpers/constants";
 
 export default Vue.extend({
   data: function () {
@@ -27,20 +28,15 @@ export default Vue.extend({
       suggestionsId: null,
     };
   },
-  computed: {
-    updatedDataHistory() {
-      return this.$store.getters.getUpdatedDataHistory(
-        this.params.node.rowIndex
-      );
-    },
-  },
+  computed: {},
   methods: {
     valueExist() {
       return this.suggestionsId !== undefined;
     },
 
     isStatusPending() {
-      return this.params.node.data.status === "pending";
+      console.log(this.params.node.data.status);
+      return this.params.node.data.status.toUpperCase() === statusMap.pending;
     },
 
     async deleteSuggestion() {

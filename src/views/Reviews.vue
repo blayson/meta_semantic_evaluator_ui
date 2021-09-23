@@ -245,7 +245,6 @@ export default {
     },
 
     showNotification(text) {
-      console.log("notification: " + text);
       alert(text);
     },
 
@@ -291,8 +290,12 @@ export default {
         await this.$store.dispatch("loadReviews", payload);
       };
 
-      const showNotification = () => {
-        this.showNotification();
+      const getAdminData = async (payload) => {
+        await this.$store.dispatch("loadForApprove", payload);
+      };
+
+      const showNotification = (text) => {
+        this.showNotification(text);
       };
 
       const nullifyUndoRedo = () => {
@@ -316,29 +319,27 @@ export default {
             getSelectedCategories(),
             getSelectedReviewStatusTab()
           );
-
-          await getData({
-            start: params.startRow,
-            end: params.endRow,
-            sort: sortParams,
-            filter: filterParams,
-          });
-          // const respData = getResponseData();
-          //
-          // let page = respData.end / pageSize;
-          //
-          // goToPage(page);
-
-          // if (response.status !== 200) {
-          //   params.failCallback();
-          //   return;
-          // }
+          if (getSelectedReviewStatusTab() === "forApprove") {
+            await getAdminData({
+              start: params.startRow,
+              end: params.endRow,
+              sort: sortParams,
+              filter: filterParams,
+            });
+          } else {
+            await getData({
+              start: params.startRow,
+              end: params.endRow,
+              sort: sortParams,
+              filter: filterParams,
+            });
+          }
 
           // Get total count of rows (returns "100" in this example)
           const totalCount = getTotal();
           if (totalCount === 0) {
-            console.log("No rows");
-            showNotification("No rows");
+            showNotification("No data");
+            params.failCallback();
           }
           // Get the rows in this batch
           const rowsThisPage = updateData();

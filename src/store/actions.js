@@ -23,7 +23,7 @@ export const actions = {
       });
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
-      // throw new Error(`API ${e}`);
+      throw new Error(`API ${e}`);
     }
   },
 
@@ -121,7 +121,7 @@ export const actions = {
     }
   },
 
-  setTab({ commit }, tab) {
-    commit("SET_TAB", tab);
-  },
+  // async setTab({ commit }, tab) {
+  //   commit("SET_TAB", tab);
+  // },
 };

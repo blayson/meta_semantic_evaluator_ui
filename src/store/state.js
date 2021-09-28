@@ -66,5 +66,11 @@ export const state = {
       id: "pending",
     },
   ],
-  selectedReviewStatusTab: "notReviewed",
+  selectedReviewStatusTab: {
+    name: "Not Reviewed",
+    id: "notReviewed",
+    rowIdGetter() {
+      return (data) => data.id;
+    },
+  },
 };

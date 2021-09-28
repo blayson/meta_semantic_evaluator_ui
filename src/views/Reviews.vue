@@ -88,6 +88,7 @@ import ReviewFilters from "@/components/ReviewFilters";
 import { applyFilters, applySort } from "@/helpers/utils";
 import { HISTORY_SIZE } from "@/helpers/constants";
 import {
+  ADMIN_COLS,
   DEFAULT_COL_DEFS,
   NOT_REVIEWED_COLS,
   REVIEWED_COLS,
@@ -163,6 +164,13 @@ export default {
             return (data) => data.suggestions_id;
           },
         },
+        {
+          name: "For approve",
+          id: "forApprove",
+          rowIdGetter() {
+            return (data) => data.reviews_suggestions_id;
+          },
+        },
       ],
 
       undoSize: 0,
@@ -173,6 +181,13 @@ export default {
   methods: {
     methodFromParent(rowIndex) {
       alert("Updated: row - " + rowIndex + "!");
+    },
+
+    isUserAdmin() {
+      return (
+        this.currentUser.user.user_roles_id === 2 ||
+        this.currentUser.user.user_roles_id === 3
+      );
     },
 
     onPageSizeChanged(newPageSize) {
@@ -228,20 +243,28 @@ export default {
     },
 
     getColDefs() {
-      if (this.selectedReviewStatusTab === "notReviewed") {
-        return NOT_REVIEWED_COLS;
-      } else if (this.selectedReviewStatusTab === "reviewed") {
-        return REVIEWED_COLS;
+      switch (this.selectedReviewStatusTab.id) {
+        case "notReviewed": {
+          return NOT_REVIEWED_COLS;
+        }
+        case "reviewed": {
+          return REVIEWED_COLS;
+        }
+        case "forApprove": {
+          return ADMIN_COLS;
+        }
       }
     },
 
     async setTab(tab) {
-      if (tab.id === this.selectedReviewStatusTab) {
-        this.gridApi.onFilterChanged();
-      }
-      await this.$store.dispatch("setTab", tab.id);
+      this.$store.commit("SET_TAB", tab);
       await this.gridApi.setColumnDefs(this.getColDefs());
+      // this.$forceUpdate();
       this.getRowNodeId = tab.rowIdGetter();
+
+      // if (tab.id === this.selectedReviewStatusTab) {
+      this.gridApi.onFilterChanged();
+      // }
     },
 
     showNotification(text) {
@@ -276,7 +299,7 @@ export default {
       };
 
       const getSelectedReviewStatusTab = () => {
-        return this.selectedReviewStatusTab;
+        return this.selectedReviewStatusTab.id;
       };
 
       const updateData = () => {
@@ -312,21 +335,24 @@ export default {
 
         getRows: async function (params) {
           nullifyUndoRedo();
-
+          const currentTab = getSelectedReviewStatusTab();
           const sortParams = applySort(params.sortModel);
           const filterParams = applyFilters(
             params.filterModel,
             getSelectedCategories(),
-            getSelectedReviewStatusTab()
+            currentTab
           );
-          if (getSelectedReviewStatusTab() === "forApprove") {
+          if (currentTab === "forApprove") {
             await getAdminData({
               start: params.startRow,
               end: params.endRow,
               sort: sortParams,
               filter: filterParams,
             });
-          } else {
+          } else if (
+            currentTab === "notReviewed" ||
+            currentTab === "reviewed"
+          ) {
             await getData({
               start: params.startRow,
               end: params.endRow,
@@ -359,9 +385,9 @@ export default {
     },
 
     copyRowData(data) {
-      return data.map((datum) => {
+      return data.map((item) => {
         return {
-          ...datum,
+          ...item,
         };
       });
     },
@@ -391,21 +417,11 @@ export default {
     };
 
     this.defaultColDef =
-      this.selectedReviewStatusTab === "notReviewed"
+      this.selectedReviewStatusTab.id === "notReviewed"
         ? DEFAULT_COL_DEFS
         : REVIEWED_DEF_COL_DEFS;
 
     this.columnDefs = this.getColDefs();
-    if (this.currentUser.user.user_roles_id === 1) {
-      // TODO: change to 2 (admin)
-      this.tabs.push({
-        name: "For approve",
-        id: "forApprove",
-        rowIdGetter() {
-          return (data) => data.suggestions_id;
-        },
-      });
-    }
 
     this.rowModelType = "infinite";
     this.cacheBlockSize = 100;
@@ -418,7 +434,7 @@ export default {
     this.undoRedoCellEditing = true;
     this.undoRedoCellEditingLimit = HISTORY_SIZE;
 
-    this.getRowNodeId = (data) => data.id;
+    this.getRowNodeId = this.selectedReviewStatusTab.rowIdGetter();
     this.context = { componentParent: this };
   },
 

@@ -1,9 +1,7 @@
 import SuggestButtonCellRenderer from "@/components/CellRenderers/SuggestButtonCellRenderer";
 import CancelButtonCellRenderer from "@/components/CellRenderers/CancelButtonCellRenderer";
-import AdminButtonCellRenderer from "@/components/CellRenderers/AdminButtonCellRenderer";
-import AdminFeatureCellRenderer from "@/components/CellRenderers/AdminFeatureCellRenderer";
-import AdminSentimentCellRenderer from "@/components/CellRenderers/AdminSentimentCellRenderer";
-import AdminProductCellRenderer from "@/components/CellRenderers/AdminProductCellRenderer";
+import ButtonAdminCellRenderer from "@/components/CellRenderers/Admin/ButtonAdminCellRenderer";
+import ChangesAdminCellRenderer from "@/components/CellRenderers/Admin/ChangesAdminCellRenderer";
 
 const getFeatureCol = function (tab) {
   const featureCol = {
@@ -19,9 +17,6 @@ const getFeatureCol = function (tab) {
 
   if (tab === "reviewed") {
     featureCol.editable = false;
-  } else if (tab === "admin") {
-    featureCol.editable = false;
-    featureCol.cellRendererFramework = AdminFeatureCellRenderer;
   }
   return featureCol;
 };
@@ -43,8 +38,6 @@ const getSentimentCol = function (tab) {
     sentimentCol.cellEditorParams = {
       values: ["positive", "negative"],
     };
-  } else if (tab === "admin") {
-    sentimentCol.cellRendererFramework = AdminSentimentCellRenderer;
   }
 
   return sentimentCol;
@@ -62,9 +55,6 @@ const getProductCol = function (tab) {
   };
   if (tab === "reviewed") {
     productCol.editable = false;
-  } else if (tab === "admin") {
-    productCol.editable = false;
-    productCol.cellRendererFramework = AdminProductCellRenderer;
   }
   return productCol;
 };
@@ -146,9 +136,28 @@ export const REVIEWED_COLS = [
 ];
 
 export const ADMIN_COLS = [
-  getFeatureCol("admin"),
-  getSentimentCol("admin"),
-  getProductCol("admin"),
+  {
+    field: "suggestion_time",
+    headerName: "Date",
+    sortable: true,
+    sort: "desc",
+    maxWidth: 120,
+    editable: false,
+  },
+  {
+    field: "users_id",
+    headerName: "User",
+    filter: true,
+    editable: false,
+    maxWidth: 100,
+  },
+  {
+    field: "changes",
+    headerName: "Changes",
+    filter: true,
+    editable: false,
+    cellRendererFramework: ChangesAdminCellRenderer,
+  },
   {
     field: "button",
     maxWidth: 100,
@@ -157,7 +166,7 @@ export const ADMIN_COLS = [
     colId: "button",
     editable: false,
     pinned: "right",
-    cellRendererFramework: AdminButtonCellRenderer,
+    cellRendererFramework: ButtonAdminCellRenderer,
   },
 ];
 

@@ -10,7 +10,6 @@
         elevation="1"
         small
         dark
-        tile
         :disabled="!isStatusPending()"
         ><v-icon>mdi-delete</v-icon></v-btn
       >

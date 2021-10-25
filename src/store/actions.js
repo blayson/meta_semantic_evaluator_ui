@@ -108,6 +108,10 @@ export const actions = {
     commit("LOGOUT");
   },
 
+  // verifyToken({ commit }) {
+  //   console.log("verifyToken");
+  // },
+
   setSelectedCategories({ commit }, selectedCategories) {
     commit("SAVE_SELECTED_CATEGORIES", selectedCategories);
   },

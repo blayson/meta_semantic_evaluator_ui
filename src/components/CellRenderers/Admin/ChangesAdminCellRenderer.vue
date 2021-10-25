@@ -1,12 +1,35 @@
 <template>
   <div v-if="value !== undefined && value !== null">
-    <v-chip :color="getColor(value.sentiment.old_value)" dark small>{{
-      value.sentiment.old_value
-    }}</v-chip>
-    <span><v-icon>mdi-arrow-right</v-icon></span>
-    <v-chip :color="getColor(value.sentiment.new_value)" dark small>{{
-      value.sentiment.new_value
-    }}</v-chip>
+    <v-row dense justify="left">
+      <v-col
+        v-if="
+          'sentiment' in value &&
+          value.sentiment !== undefined &&
+          value.sentiment !== null &&
+          value.sentiment.new_value !== null
+        "
+      >
+        <v-chip :color="getColor(value.sentiment.old_value)" dark small>{{
+          value.sentiment.old_value
+        }}</v-chip>
+        <span><v-icon>mdi-arrow-right</v-icon></span>
+        <v-chip :color="getColor(value.sentiment.new_value)" dark small>{{
+          value.sentiment.new_value
+        }}</v-chip>
+      </v-col>
+      <v-col
+        v-if="
+          'feature' in value &&
+          value.feature !== undefined &&
+          value.feature !== null &&
+          value.feature.new_value !== null
+        "
+      >
+        <span>{{ value.feature.old_value }}</span>
+        <span><v-icon>mdi-arrow-right</v-icon></span>
+        <span>{{ value.feature.new_value }}</span>
+      </v-col>
+    </v-row>
   </div>
 </template>
 

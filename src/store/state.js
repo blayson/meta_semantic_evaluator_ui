@@ -14,15 +14,12 @@ const user = parseUser();
 
 const updatedDataObject = {
   index: Number,
+  latest: Boolean,
   sentiment: {
     newValue: String,
     oldValue: String,
   },
   feature: {
-    newValue: String,
-    oldValue: String,
-  },
-  product: {
     newValue: String,
     oldValue: String,
   },

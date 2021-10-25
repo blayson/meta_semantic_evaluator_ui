@@ -37,7 +37,7 @@ export default Vue.extend({
     },
 
     isDataUpdated() {
-      const updatableCols = ["sentiment", "product", "feature"];
+      const updatableCols = ["sentiment", "feature"];
       let updated = false;
       if (this.updatedDataHistory !== null) {
         for (const col of updatableCols) {

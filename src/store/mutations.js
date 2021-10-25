@@ -14,16 +14,7 @@ export const mutations = {
   },
 
   SAVE_CELL_UPDATES(state, payload) {
-    const colId = payload.colId;
-    let dataToUpdate = {
-      index: payload.index,
-    };
-
-    dataToUpdate[colId] = {
-      newValue: payload.newValue,
-      oldValue: payload.oldValue,
-    };
-    state.status.reviews.updatedDataHistory.unshift(dataToUpdate);
+    state.status.reviews.updatedDataHistory.unshift(payload);
     if (state.status.reviews.updatedDataHistory.length > HISTORY_SIZE) {
       state.status.reviews.updatedDataHistory.pop();
     }

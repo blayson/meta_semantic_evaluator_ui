@@ -5,21 +5,23 @@
     </div>
     <div v-else>
       <v-btn
-        @click="submitSuggestion()"
-        :color="isDataUpdated() ? 'primary' : 'accent'"
+        @click="deleteSuggestion()"
+        color="red"
         elevation="1"
         small
+        outlined
+        style="margin-right: 5px"
+        ><v-icon>mdi-delete</v-icon></v-btn
+      >
+      <v-btn
+        @click="submitSuggestion()"
+        color="primary"
+        elevation="1"
+        small
+        style="margin-left: 5px"
         ><v-icon>mdi-check</v-icon></v-btn
       >
     </div>
-    <!--    <div v-if="!valueExist()">-->
-    <!--      <v-btn elevation="1" small tile loading disabled></v-btn>-->
-    <!--    </div>-->
-    <!--    <div v-else>-->
-    <!--      <v-btn color="red" elevation="1" small dark tile :disabled="false"-->
-    <!--        ><v-icon>mdi-delete</v-icon></v-btn-->
-    <!--      >-->
-    <!--    </div>-->
   </div>
 </template>
 
@@ -61,6 +63,8 @@ export default Vue.extend({
       }
       return updated;
     },
+
+    deleteSuggestion() {},
 
     async submitSuggestion() {
       const id_arr = this.cellValue.split("|");

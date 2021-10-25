@@ -85,6 +85,9 @@ export default {
     //   return false;
     // }
   },
+  // beforeMount() {
+  //   this.$store.dispatch("verifyToken");
+  // },
 
   methods: {
     doLogout() {

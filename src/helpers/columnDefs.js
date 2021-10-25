@@ -43,26 +43,24 @@ const getSentimentCol = function (tab) {
   return sentimentCol;
 };
 
-const getProductCol = function (tab) {
-  const productCol = {
+const getProductCol = function () {
+  return {
     field: "product",
     sortable: true,
     unSortIcon: true,
+    editable: false,
     filter: true,
     filterParams: {
       filterOptions: ["contains"],
     },
   };
-  if (tab === "reviewed") {
-    productCol.editable = false;
-  }
-  return productCol;
 };
 
 const textCol = {
   field: "text",
   filter: true,
   width: 300,
+  maxWidth: 700,
   editable: false,
   filterParams: {
     filterOptions: ["contains"],
@@ -88,22 +86,23 @@ const buttonCol = {
 };
 
 export const NOT_REVIEWED_COLS = [
+  textCol,
   getFeatureCol("notReviewed"),
   getSentimentCol("notReviewed"),
-  getProductCol("notReviewed"),
-  textCol,
+  getProductCol(),
   publishedCol,
   buttonCol,
 ];
 
 export const REVIEWED_COLS = [
+  textCol,
   {
     field: "id",
     hide: true,
   },
   getFeatureCol("reviewed"),
   getSentimentCol("reviewed"),
-  getProductCol("reviewed"),
+  getProductCol(),
   {
     field: "status",
     sortable: true,
@@ -116,7 +115,6 @@ export const REVIEWED_COLS = [
     },
     cellRendererFramework: "StatusCellRenderer",
   },
-  textCol,
   {
     field: "suggestion_time",
     sortable: true,
@@ -136,13 +134,15 @@ export const REVIEWED_COLS = [
 ];
 
 export const ADMIN_COLS = [
+  textCol,
   {
     field: "suggestion_time",
     headerName: "Date",
     sortable: true,
-    sort: "desc",
+    sort: "asc",
     maxWidth: 120,
     editable: false,
+    hide: false,
   },
   {
     field: "users_id",
@@ -154,13 +154,16 @@ export const ADMIN_COLS = [
   {
     field: "changes",
     headerName: "Changes",
+    minWidth: 350,
     filter: true,
     editable: false,
     cellRendererFramework: ChangesAdminCellRenderer,
   },
   {
     field: "button",
-    maxWidth: 100,
+    width: 150,
+    maxWidth: 150,
+    minWidth: 150,
     valueGetter: "node.id",
     headerName: "Approve",
     colId: "button",

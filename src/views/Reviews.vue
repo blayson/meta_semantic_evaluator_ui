@@ -259,12 +259,11 @@ export default {
     async setTab(tab) {
       this.$store.commit("SET_TAB", tab);
       await this.gridApi.setColumnDefs(this.getColDefs());
-      // this.$forceUpdate();
+
       this.getRowNodeId = tab.rowIdGetter();
 
-      // if (tab.id === this.selectedReviewStatusTab) {
+      this.gridApi.sizeColumnsToFit();
       this.gridApi.onFilterChanged();
-      // }
     },
 
     showNotification(text) {
@@ -401,18 +400,47 @@ export default {
       this.$store.commit(mutation, payload);
     };
 
+    const getColumnValue = (colId, node) => {
+      return this.gridApi.getValue(this.columnApi.getColumn(colId), node);
+    };
+
     this.gridOptions = {
       // eslint-disable-next-line no-unused-vars
       onCellEditingStarted: function (event) {
         console.log("cellEditingStarted");
       },
       onCellEditingStopped: function (event) {
-        commit("SAVE_CELL_UPDATES", {
+        let notUpdatedVal = null;
+        const colId = event.column.getId();
+        if (colId !== "feature") {
+          notUpdatedVal = getColumnValue("feature", event);
+          // console.log(notUpdatedVal);
+        } else if (colId !== "sentiment") {
+          notUpdatedVal = getColumnValue("sentiment", event);
+          // console.log(notUpdatedVal);
+        }
+
+        let payload = {
           index: event.rowIndex,
-          colId: event.column.getId(),
+        };
+        payload[colId] = {
           oldValue: event.oldValue,
           newValue: event.newValue,
-        });
+        };
+        if (colId !== "feature") {
+          payload["feature"] = {
+            oldValue: notUpdatedVal,
+            newValue: notUpdatedVal,
+          };
+        } else if (colId !== "sentiment") {
+          payload["sentiment"] = {
+            oldValue: notUpdatedVal,
+            newValue: notUpdatedVal,
+          };
+        }
+        console.log(payload);
+
+        commit("SAVE_CELL_UPDATES", payload);
       },
     };
 

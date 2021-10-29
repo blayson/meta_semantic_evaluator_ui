@@ -1,65 +1,75 @@
 <template>
-  <div>
-    <h2>Login</h2>
-    <validation-observer ref="observer" v-slot="{ invalid }">
-      <v-form @submit.prevent="doLogin" ref="form">
-        <v-row>
-          <v-col cols="12" md="4">
-            <validation-provider
-              v-slot="{ errors }"
-              name="email"
-              rules="required|email"
-            >
-              <v-text-field
-                v-model="user.email"
-                :error-messages="errors"
-                @focus="validate()"
-                @input="validate()"
-                label="E-mail"
-                required
-              ></v-text-field>
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="4">
-            <validation-provider
-              v-slot="{ errors }"
-              name="Password"
-              rules="required|min:5"
-            >
-              <v-text-field
-                v-model="user.password"
-                :error-messages="errors"
-                @focus="validate()"
-                @input="validate()"
-                label="Password"
-                type="Password"
-                required
-              ></v-text-field>
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col cols="12" md="4">
-            <v-btn
-              color="success"
-              type="submit"
-              class="form-submit"
-              :disabled="invalid"
-            >
-              Login
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-alert v-if="error != null" class="form-error" style="color: red">
-            {{ error }}
-          </v-alert>
-        </v-row>
-      </v-form>
-    </validation-observer>
-  </div>
+  <v-container fluid>
+    <v-row justify="center">
+      <h2>Login</h2>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="4">
+        <validation-observer ref="observer" v-slot="{ invalid }">
+          <v-form @submit.prevent="doLogin" ref="form">
+            <v-row>
+              <v-col>
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="email"
+                  rules="required|email"
+                >
+                  <v-text-field
+                    v-model="user.email"
+                    :error-messages="errors"
+                    @focus="validate()"
+                    @input="validate()"
+                    label="E-mail"
+                    required
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="Password"
+                  rules="required|min:5"
+                >
+                  <v-text-field
+                    v-model="user.password"
+                    :error-messages="errors"
+                    @focus="validate()"
+                    @input="validate()"
+                    label="Password"
+                    type="Password"
+                    required
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-btn
+                  color="success"
+                  type="submit"
+                  class="form-submit"
+                  :disabled="invalid"
+                >
+                  Login
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-alert
+                v-if="error != null"
+                class="form-error"
+                style="color: red"
+              >
+                {{ error }}
+              </v-alert>
+            </v-row>
+          </v-form>
+        </validation-observer>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

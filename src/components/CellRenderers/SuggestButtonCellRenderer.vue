@@ -22,6 +22,7 @@ export default Vue.extend({
   data: function () {
     return {
       cellValue: null,
+      text: "",
     };
   },
   computed: {
@@ -63,23 +64,21 @@ export default Vue.extend({
       );
 
       if (!this.isDataUpdated()) {
+        console.log(reviews_id);
         await this.$store.dispatch("submitNoSuggestions", {
           reviews_id,
         });
-        alert("Data approved");
-        return;
+        this.text = "Saved";
+      } else {
+        await this.$store.dispatch("submitSuggestions", {
+          reviews_id,
+          ...updatedData,
+        });
+        this.text = "Data suggested";
       }
-
-      await this.$store.dispatch("submitSuggestions", {
-        reviews_id,
-        ...updatedData,
-      });
-
       await this.params.api.refreshInfiniteCache();
 
-      this.params.context.componentParent.methodFromParent(
-        this.params.node.rowIndex
-      );
+      this.params.context.componentParent.showNotification(this.text);
     },
 
     // gets called whenever the user gets the cell to refresh

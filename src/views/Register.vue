@@ -1,104 +1,110 @@
 <template>
-  <div>
-    <h2>Register</h2>
-    <validation-observer ref="observer" v-slot="{ invalid }">
-      <v-form @submit.prevent="doRegister" class="form">
-        <v-row>
-          <v-col class="form-item" cols="12" md="4">
-            <validation-provider
-              v-slot="{ errors }"
-              name="email"
-              rules="required|email"
-            >
-              <v-text-field
-                type="text"
-                :error-messages="errors"
-                label="E-mail"
-                v-model="userData.email"
-                @focus="validate()"
-                @input="validate()"
-                required
-              ></v-text-field>
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="form-item" cols="12" md="4">
-            <validation-provider
-              v-slot="{ errors }"
-              name="name"
-              rules="required"
-            >
-              <v-text-field
-                type="text"
-                :error-messages="errors"
-                label="Name"
-                v-model="userData.name"
-                @focus="validate()"
-                @input="validate()"
-                required
-              ></v-text-field>
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="form-item" cols="12" md="4">
-            <validation-provider
-              v-slot="{ errors }"
-              name="password"
-              rules="required|min:5"
-            >
-              <v-text-field
-                type="password"
-                :error-messages="errors"
-                label="Password"
-                v-model="userData.password1"
-                @focus="validate()"
-                @input="validate()"
-                required
-              ></v-text-field>
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="form-item" cols="12" md="4">
-            <validation-provider
-              v-slot="{ errors }"
-              name="password"
-              rules="required|min:5"
-            >
-              <v-text-field
-                type="password"
-                :error-messages="errors"
-                label="Password again"
-                v-model="userData.password2"
-                @focus="validate()"
-                @input="validate()"
-                required
-              ></v-text-field>
-            </validation-provider>
-          </v-col>
-        </v-row>
-        <v-row>
-          <v-col class="form-item" cols="12" md="4">
-            <v-btn
-              color="success"
-              type="submit"
-              class="form-submit"
-              :disabled="invalid"
-            >
-              Register
-            </v-btn>
-          </v-col>
-        </v-row>
-        <v-row>
-          <div v-if="error != null" class="form-error" style="color: red">
-            {{ error }}
-          </div>
-        </v-row>
-      </v-form>
-    </validation-observer>
-  </div>
+  <v-container fluid>
+    <v-row justify="center">
+      <h2>Register</h2>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="4">
+        <validation-observer ref="observer" v-slot="{ invalid }">
+          <v-form @submit.prevent="doRegister" class="form">
+            <v-row>
+              <v-col class="form-item">
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="email"
+                  rules="required|email"
+                >
+                  <v-text-field
+                    type="text"
+                    :error-messages="errors"
+                    label="E-mail"
+                    v-model="userData.email"
+                    @focus="validate()"
+                    @input="validate()"
+                    required
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="form-item">
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="name"
+                  rules="required"
+                >
+                  <v-text-field
+                    type="text"
+                    :error-messages="errors"
+                    label="Name"
+                    v-model="userData.name"
+                    @focus="validate()"
+                    @input="validate()"
+                    required
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="form-item">
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="password"
+                  rules="required|min:5"
+                >
+                  <v-text-field
+                    type="password"
+                    :error-messages="errors"
+                    label="Password"
+                    v-model="userData.password1"
+                    @focus="validate()"
+                    @input="validate()"
+                    required
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="form-item">
+                <validation-provider
+                  v-slot="{ errors }"
+                  name="password"
+                  rules="required|min:5"
+                >
+                  <v-text-field
+                    type="password"
+                    :error-messages="errors"
+                    label="Password again"
+                    v-model="userData.password2"
+                    @focus="validate()"
+                    @input="validate()"
+                    required
+                  ></v-text-field>
+                </validation-provider>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col class="form-item">
+                <v-btn
+                  color="success"
+                  type="submit"
+                  class="form-submit"
+                  :disabled="invalid"
+                >
+                  Register
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <div v-if="error != null" class="form-error" style="color: red">
+                {{ error }}
+              </div>
+            </v-row>
+          </v-form>
+        </validation-observer>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>

@@ -1,6 +1,6 @@
 <template>
   <div v-if="value !== undefined && value !== null">
-    <v-row dense justify="left">
+    <v-row dense>
       <v-col
         v-if="
           'sentiment' in value &&
@@ -9,13 +9,21 @@
           value.sentiment.new_value !== null
         "
       >
-        <v-chip :color="getColor(value.sentiment.old_value)" dark small>{{
-          value.sentiment.old_value
-        }}</v-chip>
+        <v-chip
+          :color="getColor(value.sentiment.old_value)"
+          dark
+          x-small
+          style="font-size: 10px !important"
+          >{{ value.sentiment.old_value }}</v-chip
+        >
         <span><v-icon>mdi-arrow-right</v-icon></span>
-        <v-chip :color="getColor(value.sentiment.new_value)" dark small>{{
-          value.sentiment.new_value
-        }}</v-chip>
+        <v-chip
+          :color="getColor(value.sentiment.new_value)"
+          dark
+          x-small
+          style="font-size: 10px !important"
+          >{{ value.sentiment.new_value }}</v-chip
+        >
       </v-col>
       <v-col
         v-if="
@@ -25,9 +33,15 @@
           value.feature.new_value !== null
         "
       >
-        <span>{{ value.feature.old_value }}</span>
-        <span><v-icon>mdi-arrow-right</v-icon></span>
-        <span>{{ value.feature.new_value }}</span>
+        <span style="font-size: 10px !important">{{
+          value.feature.old_value
+        }}</span>
+        <span style="font-size: 10px !important"
+          ><v-icon>mdi-arrow-right</v-icon></span
+        >
+        <span style="font-size: 10px !important">{{
+          value.feature.new_value
+        }}</span>
       </v-col>
     </v-row>
   </div>

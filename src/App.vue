@@ -1,15 +1,15 @@
 <template>
   <v-app>
-    <v-app-bar app>
+    <v-app-bar app dark>
       <v-container>
         <v-row>
           <v-toolbar-title style="margin: 0 30px 0 10px" class="toolbar-title"
             >Semantic Results Evaluator
           </v-toolbar-title>
-
+          <v-toolbar-items>
+            <v-item></v-item>
+          </v-toolbar-items>
           <div v-if="currentUser">
-            Hello <b>{{ currentUser.sub }}</b
-            >!
             <router-link :to="{ name: 'Reviews' }" tag="button">
               <v-btn text>
                 <v-icon small>mdi-message-outline</v-icon>
@@ -29,20 +29,21 @@
                 </v-btn>
               </button>
             </router-link>
-            <a
+            <v-btn
               href=""
               @click.prevent="doLogout"
               v-if="currentUser"
-              style="color: cornflowerblue; margin-left: 5px"
-              >Logout</a
+              outlined
+              style="color: #8db2f8; margin-left: 5px"
+              >Logout</v-btn
             >
           </div>
           <div v-else class="actions">
             <router-link :to="{ name: 'Login' }" tag="button" exact>
-              <v-btn outlined> login </v-btn>
+              <v-btn style="margin-right: 10px"> login </v-btn>
             </router-link>
             <router-link :to="{ name: 'Register' }" tag="button" exact>
-              <v-btn outlined> Register </v-btn>
+              <v-btn> Register </v-btn>
             </router-link>
           </div>
         </v-row>
@@ -55,8 +56,12 @@
       </v-container>
     </v-main>
 
-    <v-footer app>
-      <div>Footer</div>
+    <v-footer dark>
+      <div>
+        <p>
+          <b>Developed by:</b> <i>Andrii But, Mendel University in Brno © </i>
+        </p>
+      </div>
     </v-footer>
   </v-app>
 </template>
@@ -100,6 +105,6 @@ export default {
 
 <style scoped lang="scss" rel="stylesheet/scss">
 .toolbar-title {
-  color: #310080;
+  color: #d3b8fc;
 }
 </style>

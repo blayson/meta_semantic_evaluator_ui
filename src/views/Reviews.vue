@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container fluid>
     <h1>Reviews</h1>
     <hr />
     <br />
@@ -66,10 +66,6 @@
                   @first-data-rendered="onFirstDataRendered"
                   domLayout="autoHeight"
                 >
-                  <!--                  @data-model-changed="dataModelChanged"-->
-                  <!--                  :enableRangeSelection="true"-->
-                  <!--                  :enableFillHandle="true"-->
-                  <!--                  :components="frameworkComponents"-->
                 </ag-grid-vue>
               </div>
             </v-col>
@@ -77,6 +73,15 @@
         </v-container>
       </v-col>
     </v-row>
+    <v-snackbar v-model="snackbar" :timeout="timeout">
+      {{ text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -117,6 +122,9 @@ export default {
 
     currentUser() {
       return this.$store.state.status.auth.user;
+    },
+    reviews() {
+      return this.$store.state.status.reviews;
     },
   },
 
@@ -175,12 +183,25 @@ export default {
 
       undoSize: 0,
       redoSize: 0,
+      // Notification
+      snackbar: false,
+      timeout: 2000,
+      text: "",
     };
   },
 
   methods: {
-    methodFromParent(rowIndex) {
-      alert("Updated: row - " + rowIndex + "!");
+    getRowHeight(data) {
+      let height = 50;
+      if ("changes" in data && Object.keys(data.changes).length === 2) {
+        height = 80;
+      }
+      return height;
+    },
+
+    showNotification(text) {
+      this.text = text;
+      this.snackbar = true;
     },
 
     isUserAdmin() {
@@ -264,10 +285,6 @@ export default {
 
       this.gridApi.sizeColumnsToFit();
       this.gridApi.onFilterChanged();
-    },
-
-    showNotification(text) {
-      alert(text);
     },
 
     // var colId = params.column.getId();
@@ -390,9 +407,6 @@ export default {
         };
       });
     },
-    // dataModelChanged(rowData) {
-    //   this.$store.dispatch("applyTransaction", rowData);
-    // },
   },
 
   beforeMount() {
@@ -414,10 +428,8 @@ export default {
         const colId = event.column.getId();
         if (colId !== "feature") {
           notUpdatedVal = getColumnValue("feature", event);
-          // console.log(notUpdatedVal);
         } else if (colId !== "sentiment") {
           notUpdatedVal = getColumnValue("sentiment", event);
-          // console.log(notUpdatedVal);
         }
 
         let payload = {

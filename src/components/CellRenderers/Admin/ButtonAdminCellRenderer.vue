@@ -1,25 +1,26 @@
 <template>
   <div>
     <div v-if="!valueExist()">
-      <v-btn elevation="1" small tile loading disabled></v-btn>
+      <v-btn small icon loading disabled></v-btn>
     </div>
     <div v-else>
       <v-btn
-        @click="deleteSuggestion()"
-        color="red"
-        elevation="1"
-        small
-        outlined
-        style="margin-right: 5px"
-        ><v-icon>mdi-delete</v-icon></v-btn
-      >
-      <v-btn
-        @click="submitSuggestion()"
+        @click="approveSuggestion()"
         color="primary"
-        elevation="1"
         small
+        icon
+        plain
         style="margin-left: 5px"
         ><v-icon>mdi-check</v-icon></v-btn
+      >
+      <v-btn
+        @click="rejectSuggestion()"
+        color="red"
+        small
+        icon
+        plain
+        style="margin-right: 5px"
+        ><v-icon>mdi-delete</v-icon></v-btn
       >
     </div>
   </div>
@@ -34,63 +35,29 @@ export default Vue.extend({
       cellValue: null,
     };
   },
-  computed: {
-    updatedDataHistory() {
-      return this.$store.getters.getUpdatedDataHistory(
-        this.params.node.rowIndex
-      );
-    },
-  },
+
   methods: {
     valueExist() {
       return this.cellValue !== undefined;
     },
 
-    isDataUpdated() {
-      const updatableCols = ["sentiment", "product", "feature"];
-      let updated = false;
-      if (this.updatedDataHistory !== null) {
-        for (const col of updatableCols) {
-          if (col in this.updatedDataHistory) {
-            if (
-              this.updatedDataHistory[col].newValue !==
-              this.$store.getters.getInitialRowData(this.cellValue, col)
-            )
-              updated = true;
-            break;
-          }
-        }
-      }
-      return updated;
-    },
-
-    deleteSuggestion() {},
-
-    async submitSuggestion() {
-      const id_arr = this.cellValue.split("|");
-      const reviews_id = id_arr[0];
-
-      let updatedData = this.$store.getters.getUpdatedDataHistory(
-        this.params.node.rowIndex
-      );
-
-      if (!this.isDataUpdated()) {
-        await this.$store.dispatch("submitNoSuggestions", {
-          reviews_id,
-        });
-        alert("Data approved");
-        return;
-      }
-
-      await this.$store.dispatch("submitSuggestions", {
-        reviews_id,
-        ...updatedData,
-      });
+    async rejectSuggestion() {
+      await this.$store.dispatch("rejectSuggestion", this.cellValue);
 
       await this.params.api.refreshInfiniteCache();
+      this.params.context.componentParent.showNotification(
+        `Rejected  suggestion with id ${this.cellValue}`,
+        true
+      );
+    },
 
-      this.params.context.componentParent.methodFromParent(
-        this.params.node.rowIndex
+    async approveSuggestion() {
+      await this.$store.dispatch("approveSuggestion", this.cellValue);
+
+      await this.params.api.refreshInfiniteCache();
+      this.params.context.componentParent.showNotification(
+        `Approved suggestion with id: ${this.cellValue}`,
+        true
       );
     },
 

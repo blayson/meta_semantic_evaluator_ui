@@ -1,15 +1,14 @@
 <template>
   <div>
     <div v-if="!valueExist()">
-      <v-btn elevation="1" small tile loading disabled></v-btn>
+      <v-btn small icon loading disabled></v-btn>
     </div>
     <div v-else>
       <v-btn
         @click="deleteSuggestion()"
         color="red"
-        elevation="1"
-        small
-        dark
+        fab
+        plain
         :disabled="!isStatusPending()"
         ><v-icon>mdi-delete</v-icon></v-btn
       >
@@ -51,7 +50,7 @@ export default Vue.extend({
       });
 
       await this.params.api.refreshInfiniteCache();
-      alert("deleted: " + suggestions_id);
+      this.params.context.componentParent.showNotification("Deleted", true);
     },
 
     // gets called whenever the user gets the cell to refresh

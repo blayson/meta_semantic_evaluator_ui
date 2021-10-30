@@ -161,9 +161,9 @@ export const ADMIN_COLS = [
   },
   {
     field: "button",
-    width: 150,
-    maxWidth: 150,
-    minWidth: 150,
+    width: 100,
+    maxWidth: 110,
+    minWidth: 100,
     valueGetter: "node.id",
     headerName: "Approve",
     colId: "button",

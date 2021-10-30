@@ -17,6 +17,16 @@ const SuggestionsService = {
     const url = `${this.baseUrl}?start=${payload.start}&end=${payload.end}${payload.sort}${payload.filter}`;
     return await http.get(url);
   },
+
+  rejectSuggestion: async function (suggestions_id) {
+    const url = `${this.baseUrl}/${suggestions_id}/reject`;
+    return await http.put(url);
+  },
+
+  approveSuggestion: async function (suggestions_id) {
+    const url = `${this.baseUrl}/${suggestions_id}/approve`;
+    return await http.put(url);
+  },
 };
 
 export default SuggestionsService;

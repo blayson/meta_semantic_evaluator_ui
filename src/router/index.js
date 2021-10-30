@@ -1,18 +1,13 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import { SRE_TOKEN } from "@/helpers/constants";
-import Home from "@/views/Home";
+// import Home from "@/views/Home";
 import Login from "@/views/Login";
 import Register from "@/views/Register";
 
 Vue.use(VueRouter);
 
 const routes = [
-  {
-    path: "/home",
-    name: "Home",
-    component: Home,
-  },
   {
     path: "/login",
     name: "Login",
@@ -25,7 +20,7 @@ const routes = [
   },
 
   {
-    path: "/reviews",
+    path: "/",
     name: "Reviews",
     component: () =>
       import(/* webpackChunkName: "reviews" */ "../views/Reviews.vue"),

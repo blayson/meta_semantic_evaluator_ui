@@ -1,8 +1,5 @@
 <template>
   <v-container fluid>
-    <h1>Reviews</h1>
-    <hr />
-    <br />
     <v-row no-gutters>
       <v-col md="2">
         <ReviewFilters
@@ -22,7 +19,7 @@
               <v-tabs
                 v-model="tab"
                 background-color="transparent"
-                color="deep-purple accent-4"
+                color="primary"
                 grow
                 cols="3"
                 md="3"
@@ -74,6 +71,8 @@
       </v-col>
     </v-row>
     <v-snackbar v-model="snackbar" :timeout="timeout">
+      <v-icon v-if="done" small color="green">mdi-check</v-icon>
+      <v-icon v-else small color="red">mdi-close</v-icon>
       {{ text }}
 
       <template v-slot:action="{ attrs }">
@@ -187,6 +186,7 @@ export default {
       snackbar: false,
       timeout: 2000,
       text: "",
+      done: true,
     };
   },
 
@@ -199,7 +199,8 @@ export default {
       return height;
     },
 
-    showNotification(text) {
+    showNotification(text, done) {
+      this.done = done;
       this.text = text;
       this.snackbar = true;
     },
@@ -333,8 +334,8 @@ export default {
         await this.$store.dispatch("loadForApprove", payload);
       };
 
-      const showNotification = (text) => {
-        this.showNotification(text);
+      const showNotification = (text, done) => {
+        this.showNotification(text, done);
       };
 
       const nullifyUndoRedo = () => {
@@ -380,7 +381,7 @@ export default {
           // Get total count of rows (returns "100" in this example)
           const totalCount = getTotal();
           if (totalCount === 0) {
-            showNotification("No data");
+            showNotification("No data", false);
             params.failCallback();
           }
           // Get the rows in this batch

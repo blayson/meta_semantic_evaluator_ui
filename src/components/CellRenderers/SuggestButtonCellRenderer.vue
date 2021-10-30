@@ -1,14 +1,14 @@
 <template>
   <div>
     <div v-if="!valueExist()">
-      <v-btn elevation="1" small tile loading disabled></v-btn>
+      <v-btn small icon loading disabled></v-btn>
     </div>
     <div v-else>
       <v-btn
         @click="submitSuggestion()"
         :color="isDataUpdated() ? 'primary' : 'accent'"
-        elevation="1"
-        small
+        fab
+        plain
         ><v-icon>mdi-check</v-icon></v-btn
       >
     </div>
@@ -78,7 +78,7 @@ export default Vue.extend({
       }
       await this.params.api.refreshInfiniteCache();
 
-      this.params.context.componentParent.showNotification(this.text);
+      this.params.context.componentParent.showNotification(this.text, true);
     },
 
     // gets called whenever the user gets the cell to refresh

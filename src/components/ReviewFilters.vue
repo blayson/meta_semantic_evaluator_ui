@@ -1,6 +1,6 @@
 <template>
   <v-card class="mx-auto" max-width="400">
-    <v-toolbar flat color="deep-purple accent-4" dark>
+    <v-toolbar flat dark>
       <v-toolbar-title>Settings</v-toolbar-title>
     </v-toolbar>
 

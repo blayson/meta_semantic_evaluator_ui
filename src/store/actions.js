@@ -81,6 +81,23 @@ export const actions = {
     }
   },
 
+  async rejectSuggestion({ commit }, payload) {
+    try {
+      await SuggestionsService.c(payload);
+    } catch (e) {
+      commit("SAVE_ERROR", "reviews", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+  async approveSuggestion({ commit }, payload) {
+    try {
+      await SuggestionsService.approveSuggestion(payload);
+    } catch (e) {
+      commit("SAVE_ERROR", "reviews", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+
   async login({ commit }, formData) {
     try {
       const user = await AuthService.login(formData);

@@ -33,7 +33,6 @@ export default Vue.extend({
     },
 
     isStatusPending() {
-      console.log(this.params.node.data.status);
       return this.params.node.data.status.toUpperCase() === statusMap.pending;
     },
 

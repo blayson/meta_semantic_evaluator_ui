@@ -9,9 +9,9 @@ const setup = (store) => {
       if (token) {
         config.headers["Authorization"] = `Bearer ${token}`;
 
-        const parts = token.split(".");
-        const rawToken = atob(parts[1]);
-        console.log(rawToken);
+        // const parts = token.split(".");
+        // const rawToken = atob(parts[1]);
+        // console.log(rawToken);
       }
       return config;
     },

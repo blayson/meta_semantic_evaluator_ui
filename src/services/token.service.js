@@ -64,7 +64,6 @@ class TokenService {
   }
 
   setUser(user) {
-    console.log(JSON.stringify(user));
     localStorage.setItem(SRE_TOKEN, JSON.stringify(user));
   }
 

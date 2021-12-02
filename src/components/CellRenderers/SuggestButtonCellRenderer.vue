@@ -45,10 +45,11 @@ export default Vue.extend({
           if (col in this.updatedDataHistory) {
             if (
               this.updatedDataHistory[col].newValue !==
-              this.$store.getters.getInitialRowData(this.cellValue, col)
-            )
+              this.$store.getters.getInitialRowData(this.cellValue)[col]
+            ) {
               updated = true;
-            break;
+              break;
+            }
           }
         }
       }
@@ -64,7 +65,6 @@ export default Vue.extend({
       );
 
       if (!this.isDataUpdated()) {
-        console.log(reviews_id);
         await this.$store.dispatch("submitNoSuggestions", {
           reviews_id,
         });

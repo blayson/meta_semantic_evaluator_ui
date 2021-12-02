@@ -17,10 +17,10 @@ export const getters = {
     return null;
   },
 
-  getInitialRowData: (state) => (rowId, column) => {
+  getInitialRowData: (state) => (dataId) => {
     for (const data of state.status.reviews.data) {
-      if (rowId === data.id) {
-        return data[column];
+      if (dataId === data.id) {
+        return data;
       }
     }
   },

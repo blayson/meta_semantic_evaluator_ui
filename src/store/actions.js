@@ -83,7 +83,7 @@ export const actions = {
 
   async rejectSuggestion({ commit }, payload) {
     try {
-      await SuggestionsService.c(payload);
+      await SuggestionsService.rejectSuggestion(payload);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);

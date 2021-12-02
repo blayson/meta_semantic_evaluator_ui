@@ -14,9 +14,9 @@ export default {
   },
   methods: {
     getColor(status) {
-      if (status === "pending") return "grey";
-      else if (status === "approved") return "green";
-      else if (status === "rejected") return "orange";
+      if (status === "Pending") return "grey";
+      else if (status === "Approved") return "green";
+      else if (status === "Rejected") return "orange";
       else return "grey";
     },
 

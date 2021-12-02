@@ -217,7 +217,6 @@ export default {
     },
 
     onDateSortChanged(dateSort) {
-      console.log(this.columnApi.getColumn("suggestion_time"));
       if (this.columnApi.getColumn("suggestion_time") !== null) {
         this.columnApi.applyColumnState({
           state: [
@@ -451,7 +450,6 @@ export default {
             newValue: notUpdatedVal,
           };
         }
-        console.log(payload);
 
         commit("SAVE_CELL_UPDATES", payload);
       },

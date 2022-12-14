@@ -1,4 +1,4 @@
-import {ACTIVE_MENU_ITEM_INDEX, SRE_TOKEN} from '@/helpers/constants';
+import {ACTIVE_MENU_ITEM_INDEX, REVIEW_STATUS, SRE_TOKEN} from '@/helpers/constants';
 
 function parseUser() {
   const token = localStorage.getItem(SRE_TOKEN);
@@ -54,32 +54,23 @@ export const state = {
       user: user,
       loggedIn: !!user,
     },
+    users: {
+      error: false,
+      allUsers: [],
+    },
     categories: {
       error: false,
     },
     profile: {
       activeMenuItem: activeMenuItem,
-    }
+    },
   },
   featureNames: {},
   // product categories for filters
   categories: [],
   selectedCategories: [],
   selectedStatus: [],
-  reviewStatus: [
-    {
-      name: "Rejected",
-      id: "rejected",
-    },
-    {
-      name: "Approved",
-      id: "approved",
-    },
-    {
-      name: "Pending",
-      id: "pending",
-    },
-  ],
+  reviewStatus: REVIEW_STATUS,
   selectedReviewStatusTab: {
     name: "Not Reviewed",
     id: "notReviewed",

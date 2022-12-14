@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import AdminProfile from "@/views/profiles/AdminProfile.vue";
-import UserProfile from "@/views/profiles/UserProfile.vue";
+import AdminProfile from "@/components/profiles/AdminProfile.vue";
+import UserProfile from "@/components/profiles/UserProfile.vue";
 
 export default {
   name: "Profile",

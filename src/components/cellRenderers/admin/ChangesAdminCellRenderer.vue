@@ -8,6 +8,7 @@
           value.sentiment !== null &&
           value.sentiment.new_value !== null
         "
+        cols="12" sm="8" md="5"
       >
         <v-chip
           :color="getColor(value.sentiment.old_value)"
@@ -32,6 +33,7 @@
           value.feature !== null &&
           value.feature.new_value !== null
         "
+        cols="12" sm="8" md="6"
       >
         <span style="font-size: 12px !important">{{
           value.feature.old_value

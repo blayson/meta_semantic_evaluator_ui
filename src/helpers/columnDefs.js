@@ -1,7 +1,7 @@
-import SuggestButtonCellRenderer from "@/components/CellRenderers/SuggestButtonCellRenderer";
-import CancelButtonCellRenderer from "@/components/CellRenderers/CancelButtonCellRenderer";
-import ButtonAdminCellRenderer from "@/components/CellRenderers/Admin/ButtonAdminCellRenderer";
-import ChangesAdminCellRenderer from "@/components/CellRenderers/Admin/ChangesAdminCellRenderer";
+import SuggestButtonCellRenderer from "@/components/cellRenderers/SuggestButtonCellRenderer";
+import CancelButtonCellRenderer from "@/components/cellRenderers/CancelButtonCellRenderer";
+import ButtonAdminCellRenderer from "@/components/cellRenderers/admin/ButtonAdminCellRenderer";
+import ChangesAdminCellRenderer from "@/components/cellRenderers/admin/ChangesAdminCellRenderer";
 import AutocompleteSelectCellEditor from "ag-grid-autocomplete-editor";
 
 const getSentimentCol = function (tab) {

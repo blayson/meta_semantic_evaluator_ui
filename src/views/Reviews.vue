@@ -87,8 +87,8 @@
 <script>
 import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
-import SentimentCellRenderer from "@/components/CellRenderers/SentimentCellRenderer";
-import ReviewedSentimentCellRenderer from "@/components/CellRenderers/ReviewedSentimentCellRenderer.vue";
+import SentimentCellRenderer from "@/components/cellRenderers/SentimentCellRenderer";
+import ReviewedSentimentCellRenderer from "@/components/cellRenderers/ReviewedSentimentCellRenderer.vue";
 import ReviewFilters from "@/components/ReviewFilters";
 import { applyFilters, applySort } from "@/helpers/utils";
 import { HISTORY_SIZE } from "@/helpers/constants";
@@ -99,8 +99,8 @@ import {
   REVIEWED_COLS,
   REVIEWED_DEF_COL_DEFS,
 } from "@/helpers/columnDefs";
-import StatusCellRenderer from "@/components/CellRenderers/StatusCellRenderer";
-import ReviewedFeatureNameCellRenderer from "@/components/CellRenderers/ReviewedFeatureNameCellRenderer.vue";
+import StatusCellRenderer from "@/components/cellRenderers/StatusCellRenderer";
+import ReviewedFeatureNameCellRenderer from "@/components/cellRenderers/ReviewedFeatureNameCellRenderer.vue";
 
 export default {
   name: "Reviews",

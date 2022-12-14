@@ -86,4 +86,8 @@ export const mutations = {
   REGISTER_FAILURE(state) {
     state.status.auth.loggedIn = false;
   },
+
+  SAVE_ALL_USERS(state, data) {
+    state.status.users.allUsers = data;
+  },
 };

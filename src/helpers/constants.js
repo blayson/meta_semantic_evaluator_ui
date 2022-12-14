@@ -14,6 +14,21 @@ export const ACTIVE_MENU_ITEM_INDEX = "activeMenuItemIndex";
 
 export const USER_ROLES_MAP = {
   1: "User",
-  2: "Admin",
+  2: "admin",
   3: "Super admin",
 };
+
+export const REVIEW_STATUS = [
+  {
+    name: "Rejected",
+    id: "rejected",
+  },
+  {
+    name: "Approved",
+    id: "approved",
+  },
+  {
+    name: "Pending",
+    id: "pending",
+  },
+];

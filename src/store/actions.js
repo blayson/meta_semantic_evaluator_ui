@@ -3,6 +3,7 @@ import AuthService from "@/services/auth.service";
 import SuggestionsService from "@/services/suggestions.service";
 import FeaturesService from "@/services/features.service";
 import { ACTIVE_MENU_ITEM_INDEX } from "@/helpers/constants";
+import AdminService from "@/services/admin.service";
 
 export const actions = {
   async loadReviews({ commit }, payload) {
@@ -40,7 +41,7 @@ export const actions = {
           filter: "",
         };
       }
-      let response = await SuggestionsService.getSuggestionsForApprove(payload);
+      let response = await AdminService.getSuggestionsForApprove(payload);
       commit("SAVE_REVIEWS", response.data.data);
       commit("SAVE_RESPONSE", {
         total: response.data.total,
@@ -85,7 +86,7 @@ export const actions = {
 
   async rejectSuggestion({ commit }, payload) {
     try {
-      await SuggestionsService.rejectSuggestion(payload);
+      await AdminService.rejectSuggestion(payload);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
@@ -93,7 +94,7 @@ export const actions = {
   },
   async approveSuggestion({ commit }, payload) {
     try {
-      await SuggestionsService.approveSuggestion(payload);
+      await AdminService.approveSuggestion(payload);
     } catch (e) {
       commit("SAVE_ERROR", "reviews", true);
       throw new Error(`API ${e}`);
@@ -127,10 +128,6 @@ export const actions = {
     commit("LOGOUT");
   },
 
-  // verifyToken({ commit }) {
-  //   console.log("verifyToken");
-  // },
-
   setSelectedCategories({ commit }, selectedCategories) {
     commit("SAVE_SELECTED_CATEGORIES", selectedCategories);
   },
@@ -158,7 +155,36 @@ export const actions = {
     localStorage.setItem(ACTIVE_MENU_ITEM_INDEX, data);
     commit("SET_ACTIVE_MENU_ITEM", data);
   },
-  // async setTab({ commit }, tab) {
-  //   commit("SET_TAB", tab);
-  // },
+
+  async getAllUsers({ commit }) {
+    try {
+      let response = await AdminService.getAllUsers();
+      commit("SAVE_ALL_USERS", response.data.data);
+      return response;
+    } catch (e) {
+      commit("SAVE_ERROR", "users", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+
+  async updateUser({ commit }, data) {
+    try {
+      const users_id = data.users_id;
+      delete data.users_id;
+      delete data.register_language;
+      await AdminService.updateUser(users_id, data);
+    } catch (e) {
+      commit("SAVE_ERROR", "admin", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+
+  async deleteUser({ commit }, userId) {
+    try {
+      await AdminService.deleteUser(userId);
+    } catch (e) {
+      commit("SAVE_ERROR", "admin", true);
+      throw new Error(`API ${e}`);
+    }
+  },
 };

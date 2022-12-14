@@ -16,7 +16,7 @@
           style="font-size: 12px !important"
           >{{ value.sentiment.old_value }}</v-chip
         >
-        <span><v-icon>mdi-arrow-right</v-icon></span>
+        <span><v-icon x-small>mdi-arrow-right</v-icon></span>
         <v-chip
           :color="getColor(value.sentiment.new_value)"
           dark
@@ -37,7 +37,7 @@
           value.feature.old_value
         }}</span>
         <span style="font-size: 10px !important"
-          ><v-icon>mdi-arrow-right</v-icon></span
+          ><v-icon x-small>mdi-arrow-right</v-icon></span
         >
         <span style="font-size: 12px !important">{{
           value.feature.new_value

@@ -110,9 +110,9 @@ export default {
     //   return false;
     // }
   },
-  // beforeMount() {
-  //   this.$store.dispatch("verifyToken");
-  // },
+  async beforeMount() {
+    await this.$store.dispatch("loadFeatureNames")
+  },
 
   methods: {
     doLogout() {

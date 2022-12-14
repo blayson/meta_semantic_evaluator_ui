@@ -1,6 +1,8 @@
 import ReviewsService from "@/services/reviews.service";
 import AuthService from "@/services/auth.service";
 import SuggestionsService from "@/services/suggestions.service";
+import FeaturesService from "@/services/features.service";
+import { ACTIVE_MENU_ITEM_INDEX } from "@/helpers/constants";
 
 export const actions = {
   async loadReviews({ commit }, payload) {
@@ -142,6 +144,20 @@ export const actions = {
     }
   },
 
+  async loadFeatureNames({ commit }) {
+    try {
+      let response = await FeaturesService.getAllFeatureNamesByLang();
+      commit("SAVE_FEATURE_NAMES", response.data.data);
+    } catch (e) {
+      commit("SAVE_ERROR", "features", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+
+  setActiveMenuItem({ commit }, data) {
+    localStorage.setItem(ACTIVE_MENU_ITEM_INDEX, data);
+    commit("SET_ACTIVE_MENU_ITEM", data);
+  },
   // async setTab({ commit }, tab) {
   //   commit("SET_TAB", tab);
   // },

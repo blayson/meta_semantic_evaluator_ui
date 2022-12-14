@@ -18,7 +18,7 @@
 
 <script>
 import Vue from "vue";
-import { statusMap } from "@/helpers/constants";
+import { STATUS_MAP } from "@/helpers/constants";
 
 export default Vue.extend({
   data: function () {
@@ -33,7 +33,7 @@ export default Vue.extend({
     },
 
     isStatusPending() {
-      return this.params.node.data.status.toUpperCase() === statusMap.pending;
+      return this.params.node.data.status.toUpperCase() === STATUS_MAP.pending;
     },
 
     async deleteSuggestion() {

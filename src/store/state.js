@@ -1,4 +1,4 @@
-import { SRE_TOKEN } from "@/helpers/constants";
+import {ACTIVE_MENU_ITEM_INDEX, SRE_TOKEN} from '@/helpers/constants';
 
 function parseUser() {
   const token = localStorage.getItem(SRE_TOKEN);
@@ -10,7 +10,12 @@ function parseUser() {
   return null;
 }
 
+function getActiveMenuItem() {
+  return localStorage.getItem(ACTIVE_MENU_ITEM_INDEX)
+}
+
 const user = parseUser();
+const activeMenuItem = getActiveMenuItem();
 
 const updatedDataObject = {
   index: Number,
@@ -18,10 +23,12 @@ const updatedDataObject = {
   sentiment: {
     newValue: String,
     oldValue: String,
+    initialValue: String,
   },
   feature: {
     newValue: String,
     oldValue: String,
+    initialValue: String,
   },
 };
 
@@ -39,12 +46,22 @@ export const state = {
       },
       error: false,
     },
+    features: {
+      error: false,
+    },
     // user
     auth: {
       user: user,
       loggedIn: !!user,
     },
+    categories: {
+      error: false,
+    },
+    profile: {
+      activeMenuItem: activeMenuItem,
+    }
   },
+  featureNames: {},
   // product categories for filters
   categories: [],
   selectedCategories: [],

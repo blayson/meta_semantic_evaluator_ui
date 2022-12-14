@@ -9,6 +9,10 @@ export const mutations = {
     state.categories = categories;
   },
 
+  SAVE_FEATURE_NAMES(state, featureNames) {
+    state.featureNames = featureNames;
+  },
+
   SAVE_SELECTED_CATEGORIES(state, selected) {
     state.selectedCategories = selected;
   },
@@ -22,6 +26,10 @@ export const mutations = {
 
   SAVE_RESPONSE(state, data) {
     state.status.reviews.response = data;
+  },
+
+  SET_ACTIVE_MENU_ITEM(state, data) {
+    state.status.profile.activeMenuItem = data;
   },
 
   UNDO_LAST_UPDATE(state) {

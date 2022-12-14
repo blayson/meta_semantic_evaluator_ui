@@ -2,24 +2,7 @@ import SuggestButtonCellRenderer from "@/components/CellRenderers/SuggestButtonC
 import CancelButtonCellRenderer from "@/components/CellRenderers/CancelButtonCellRenderer";
 import ButtonAdminCellRenderer from "@/components/CellRenderers/Admin/ButtonAdminCellRenderer";
 import ChangesAdminCellRenderer from "@/components/CellRenderers/Admin/ChangesAdminCellRenderer";
-
-const getFeatureCol = function (tab) {
-  const featureCol = {
-    field: "feature",
-    sortable: true,
-    maxWidth: 250,
-    filter: true,
-    filterParams: {
-      filterOptions: ["contains"],
-    },
-    unSortIcon: true,
-  };
-
-  if (tab === "reviewed") {
-    featureCol.editable = false;
-  }
-  return featureCol;
-};
+import AutocompleteSelectCellEditor from "ag-grid-autocomplete-editor";
 
 const getSentimentCol = function (tab) {
   const sentimentCol = {
@@ -85,14 +68,40 @@ const buttonCol = {
   cellRendererFramework: SuggestButtonCellRenderer,
 };
 
-export const NOT_REVIEWED_COLS = [
-  textCol,
-  getFeatureCol("notReviewed"),
-  getSentimentCol("notReviewed"),
-  getProductCol(),
-  publishedCol,
-  buttonCol,
-];
+export const getNotReviewedCols = (featureNames) => {
+  return [
+    textCol,
+    {
+      field: "feature",
+      headerName: "Feature",
+      colId: "feature",
+      cellEditor: AutocompleteSelectCellEditor,
+      cellEditorParams: {
+        required: true,
+        selectData: featureNames,
+        placeholder: "Select an option",
+      },
+      valueFormatter: (params) => {
+        if (params.value) {
+          return params.value.label || params.value.value || params.value;
+        }
+        return "";
+      },
+      sortable: true,
+      maxWidth: 250,
+      filter: true,
+      filterParams: {
+        filterOptions: ["contains"],
+      },
+      unSortIcon: true,
+      editable: true,
+    },
+    getSentimentCol("notReviewed"),
+    getProductCol(),
+    publishedCol,
+    buttonCol,
+  ];
+};
 
 export const REVIEWED_COLS = [
   textCol,
@@ -100,8 +109,33 @@ export const REVIEWED_COLS = [
     field: "id",
     hide: true,
   },
-  getFeatureCol("reviewed"),
-  getSentimentCol("reviewed"),
+  {
+    field: "suggestion_feature_name",
+    headerName: "Feature",
+    sortable: true,
+    // valueGetter: "node.id",
+    maxWidth: 350,
+    minWidth: 200,
+    filter: true,
+    filterParams: {
+      filterOptions: ["contains"],
+    },
+    unSortIcon: true,
+    colId: "feature",
+    editable: false,
+    cellRendererFramework: "ReviewedFeatureNameCellRenderer",
+  },
+  {
+    field: "suggestion_sentiment",
+    sortable: true,
+    headerName: "Sentiment",
+    maxWidth: 220,
+    minWidth: 150,
+    unSortIcon: true,
+    colId: "sentiment",
+    editable: false,
+    cellRendererFramework: "ReviewedSentimentCellRenderer",
+  },
   getProductCol(),
   {
     field: "status",

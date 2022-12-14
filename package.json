@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "ag-grid-autocomplete-editor": "^3.0.1",
     "ag-grid-community": "^25.3.0",
     "ag-grid-vue": "^25.3.0",
     "axios": "^0.21.1",

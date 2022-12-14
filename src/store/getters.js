@@ -8,6 +8,8 @@ export const getters = {
 
   getResponseData: (state) => state.status.reviews.response,
 
+  getFeatureNames: (state) => state.featureNames,
+
   getUpdatedDataHistory: (state) => (index) => {
     for (const data of state.status.reviews.updatedDataHistory) {
       if (data.index === index) {

@@ -88,17 +88,19 @@
 import { mapState } from "vuex";
 import { AgGridVue } from "ag-grid-vue";
 import SentimentCellRenderer from "@/components/CellRenderers/SentimentCellRenderer";
+import ReviewedSentimentCellRenderer from "@/components/CellRenderers/ReviewedSentimentCellRenderer.vue";
 import ReviewFilters from "@/components/ReviewFilters";
 import { applyFilters, applySort } from "@/helpers/utils";
 import { HISTORY_SIZE } from "@/helpers/constants";
 import {
   ADMIN_COLS,
   DEFAULT_COL_DEFS,
-  NOT_REVIEWED_COLS,
+  getNotReviewedCols,
   REVIEWED_COLS,
   REVIEWED_DEF_COL_DEFS,
 } from "@/helpers/columnDefs";
 import StatusCellRenderer from "@/components/CellRenderers/StatusCellRenderer";
+import ReviewedFeatureNameCellRenderer from "@/components/CellRenderers/ReviewedFeatureNameCellRenderer.vue";
 
 export default {
   name: "Reviews",
@@ -110,6 +112,10 @@ export default {
     SentimentCellRenderer,
     // eslint-disable-next-line vue/no-unused-components
     StatusCellRenderer,
+    // eslint-disable-next-line vue/no-unused-components
+    ReviewedSentimentCellRenderer,
+    // eslint-disable-next-line vue/no-unused-components
+    ReviewedFeatureNameCellRenderer,
   },
 
   computed: {
@@ -117,13 +123,11 @@ export default {
       selectedProductCategories: "selectedCategories",
       selectedReviewStatusTab: "selectedReviewStatusTab",
       selectedStatus: "selectedStatus",
+      featureNames: "featureNames",
     }),
 
     currentUser() {
       return this.$store.state.status.auth.user;
-    },
-    reviews() {
-      return this.$store.state.status.reviews;
     },
   },
 
@@ -156,7 +160,23 @@ export default {
 
       args: 0,
       tab: null,
-      tabs: [
+      userTabs: [
+        {
+          name: "Not Reviewed",
+          id: "notReviewed",
+          rowIdGetter() {
+            return (data) => data.id;
+          },
+        },
+        {
+          name: "Reviewed",
+          id: "reviewed",
+          rowIdGetter() {
+            return (data) => data.suggestions_id;
+          },
+        },
+      ],
+      adminTabs: [
         {
           name: "Not Reviewed",
           id: "notReviewed",
@@ -179,7 +199,7 @@ export default {
           },
         },
       ],
-
+      tabs: [],
       undoSize: 0,
       redoSize: 0,
       // Notification
@@ -266,7 +286,8 @@ export default {
     getColDefs() {
       switch (this.selectedReviewStatusTab.id) {
         case "notReviewed": {
-          return NOT_REVIEWED_COLS;
+          // console.log(this.featureNames);
+          return getNotReviewedCols(this.featureNames);
         }
         case "reviewed": {
           return REVIEWED_COLS;
@@ -409,13 +430,23 @@ export default {
     },
   },
 
-  beforeMount() {
+  async beforeMount() {
     const commit = (mutation, payload) => {
       this.$store.commit(mutation, payload);
     };
 
+    const getInitialRowData = (dataId) => {
+      return this.$store.getters.getInitialRowData(dataId);
+    };
+
     const getColumnValue = (colId, node) => {
-      return this.gridApi.getValue(this.columnApi.getColumn(colId), node);
+      const val = this.gridApi.getValue(this.columnApi.getColumn(colId), node);
+      console.log(this.columnApi.getColumn(colId));
+      if (typeof val === "string" || val instanceof String) {
+        return val;
+      } else {
+        return val.label;
+      }
     };
 
     this.gridOptions = {
@@ -424,32 +455,64 @@ export default {
         console.log("cellEditingStarted");
       },
       onCellEditingStopped: function (event) {
+        console.log("cellEditingStopped");
         let notUpdatedVal = null;
         const colId = event.column.getId();
+
         if (colId !== "feature") {
           notUpdatedVal = getColumnValue("feature", event);
         } else if (colId !== "sentiment") {
           notUpdatedVal = getColumnValue("sentiment", event);
         }
+        console.log(event.rowIndex)
 
         let payload = {
           index: event.rowIndex,
         };
-        payload[colId] = {
-          oldValue: event.oldValue,
-          newValue: event.newValue,
-        };
+
+        if (colId === "feature") {
+          if (
+            typeof event.oldValue === "string" ||
+            event.oldValue instanceof String
+          ) {
+            payload[colId] = {
+              oldValue: event.oldValue,
+            };
+          } else {
+            payload[colId] = {
+              oldValue: event.oldValue.label,
+            };
+          }
+
+          payload[colId]["newValue"] = event.newValue.label;
+        } else if (colId === "sentiment") {
+          payload[colId] = {
+            oldValue: event.oldValue,
+            newValue: event.newValue,
+          };
+        }
+
         if (colId !== "feature") {
           payload["feature"] = {
             oldValue: notUpdatedVal,
             newValue: notUpdatedVal,
+            initialValue: getInitialRowData(event.node.data.id)["feature"],
           };
         } else if (colId !== "sentiment") {
           payload["sentiment"] = {
             oldValue: notUpdatedVal,
             newValue: notUpdatedVal,
+            initialValue: getInitialRowData(event.node.data.id)["sentiment"],
           };
         }
+
+        payload[colId]["initialValue"] = getInitialRowData(event.node.data.id)[
+          colId
+        ];
+
+        console.log(payload);
+
+
 
         commit("SAVE_CELL_UPDATES", payload);
       },
@@ -477,9 +540,15 @@ export default {
     this.context = { componentParent: this };
   },
 
-  mounted() {
+  async mounted() {
     this.gridApi = this.gridOptions.api;
     this.columnApi = this.gridOptions.columnApi;
+
+    if (this.isUserAdmin()) {
+      this.tabs = this.adminTabs;
+    } else {
+      this.tabs = this.userTabs;
+    }
   },
 };
 </script>
@@ -504,6 +573,9 @@ export default {
 #myGrid {
   flex: 1 1 0;
   width: 100%;
+}
+.ag-cell-editor-autocomplete {
+  background: whitesmoke;
 }
 
 .fa-hourglass-half {

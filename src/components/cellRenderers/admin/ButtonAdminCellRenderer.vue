@@ -20,7 +20,7 @@
         icon
         plain
         style="margin-right: 5px"
-        ><v-icon>mdi-delete</v-icon></v-btn
+        ><v-icon>mdi-window-close</v-icon></v-btn
       >
     </div>
   </div>

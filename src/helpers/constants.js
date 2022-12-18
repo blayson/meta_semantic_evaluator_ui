@@ -12,11 +12,19 @@ export const STATUS_MAP = {
 
 export const ACTIVE_MENU_ITEM_INDEX = "activeMenuItemIndex";
 
-export const USER_ROLES_MAP = {
+export const ROLE_TO_ID_MAP = {
+  user: 1,
+  admin: 2,
+  "super admin": 3,
+};
+
+export const ID_TO_ROLES_MAP = {
   1: "User",
   2: "admin",
   3: "Super admin",
 };
+
+export const USER_ROLES = ["user", "admin"];
 
 export const REVIEW_STATUS = [
   {
@@ -32,3 +40,5 @@ export const REVIEW_STATUS = [
     id: "pending",
   },
 ];
+
+

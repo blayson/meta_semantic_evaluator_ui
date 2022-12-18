@@ -2,7 +2,12 @@
   <v-container>
     <h1>Profile</h1>
     <hr />
-    <admin-profile v-if="currentUser.user.user_roles_id === 2"></admin-profile>
+    <admin-profile
+      v-if="
+        currentUser.user.user_roles_id === 2 ||
+        currentUser.user.user_roles_id === 3
+      "
+    ></admin-profile>
     <user-profile v-else></user-profile>
   </v-container>
 </template>
@@ -23,8 +28,6 @@ export default {
     return {};
   },
   methods: {},
-  mounted() {
-    // console.log(this.currentUser);
-  },
+  mounted() {},
 };
 </script>

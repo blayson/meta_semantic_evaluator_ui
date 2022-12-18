@@ -21,15 +21,15 @@ class AuthService {
   }
 
   async register(payload) {
-    try {
-      const response = await http.post("/auth/register", payload);
-      const { token } = response.data;
-      tokenManager.setToken(token);
-      return response.data;
-    } catch (e) {
-      localStorage.removeItem(SRE_TOKEN);
-      throw e;
-    }
+    // try {
+    const response = await http.post("/auth/register", payload);
+      // const { token } = response.data;
+      // tokenManager.setToken(token);
+    return response.data;
+    // } catch (e) {
+      // localStorage.removeItem(SRE_TOKEN);
+      // throw e;
+    // }
   }
 
   logout() {

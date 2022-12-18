@@ -32,6 +32,7 @@
                   {{ item.name }}
                 </v-tab>
               </v-tabs>
+
             </v-col>
           </v-row>
           <v-row>
@@ -441,7 +442,6 @@ export default {
 
     const getColumnValue = (colId, node) => {
       const val = this.gridApi.getValue(this.columnApi.getColumn(colId), node);
-      console.log(this.columnApi.getColumn(colId));
       if (typeof val === "string" || val instanceof String) {
         return val;
       } else {
@@ -450,10 +450,6 @@ export default {
     };
 
     this.gridOptions = {
-      // eslint-disable-next-line no-unused-vars
-      onCellEditingStarted: function (event) {
-        console.log("cellEditingStarted");
-      },
       onCellEditingStopped: function (event) {
         console.log("cellEditingStopped");
         let notUpdatedVal = null;
@@ -464,7 +460,6 @@ export default {
         } else if (colId !== "sentiment") {
           notUpdatedVal = getColumnValue("sentiment", event);
         }
-        console.log(event.rowIndex)
 
         let payload = {
           index: event.rowIndex,
@@ -509,10 +504,6 @@ export default {
         payload[colId]["initialValue"] = getInitialRowData(event.node.data.id)[
           colId
         ];
-
-        console.log(payload);
-
-
 
         commit("SAVE_CELL_UPDATES", payload);
       },

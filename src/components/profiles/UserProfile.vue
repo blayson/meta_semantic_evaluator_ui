@@ -11,15 +11,13 @@
 
 <script>
 export default {
-  name: 'UserProfile',
+  name: "UserProfile",
   computed: {
     currentUser() {
       return this.$store.state.status.auth.user;
     },
-  }
+  },
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

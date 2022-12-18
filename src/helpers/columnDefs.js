@@ -179,11 +179,11 @@ export const ADMIN_COLS = [
     hide: false,
   },
   {
-    field: "users_id",
+    field: "user_name",
     headerName: "User",
     filter: true,
     editable: false,
-    maxWidth: 100,
+    maxWidth: 110,
   },
   {
     field: "changes",

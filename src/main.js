@@ -5,12 +5,12 @@ import store from "./store";
 import vuetify from "./plugins/vuetify";
 
 import { TokenServiceOld } from "@/services/token.service";
-// import { http } from "@/helpers/http-common";
 import setupInterceptors from "@/services/setupInterceptors";
+import http from "@/services/api";
 
 Vue.config.productionTip = false;
 
-// Vue.prototype.$http = http;
+Vue.prototype.$http = http;
 
 export const tokenManager = new TokenServiceOld();
 tokenManager.renew();

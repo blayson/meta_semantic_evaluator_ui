@@ -10,6 +10,14 @@ export const getters = {
 
   getFeatureNames: (state) => state.featureNames,
 
+  getSuggestionById: (state) => (dataId) => {
+    for (const data of state.status.reviews.data) {
+      if (dataId === data.reviews_suggestions_id) {
+        return data.changes;
+      }
+    }
+  },
+
   getUpdatedDataHistory: (state) => (index) => {
     for (const data of state.status.reviews.updatedDataHistory) {
       if (data.index === index) {

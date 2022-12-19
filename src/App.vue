@@ -95,23 +95,9 @@ export default {
     currentUser() {
       return this.$store.state.status.auth.user;
     },
-    // showAdminBoard() {
-    //   if (this.currentUser && this.currentUser.roles) {
-    //     return this.currentUser.roles.includes('ROLE_ADMIN');
-    //   }
-    //
-    //   return false;
-    // },
-    // showModeratorBoard() {
-    //   if (this.currentUser && this.currentUser.roles) {
-    //     return this.currentUser.roles.includes('ROLE_MODERATOR');
-    //   }
-    //
-    //   return false;
-    // }
   },
   async beforeMount() {
-    await this.$store.dispatch("loadFeatureNames")
+    await this.$store.dispatch("loadFeatureNames");
   },
 
   methods: {

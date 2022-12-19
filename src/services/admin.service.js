@@ -32,6 +32,13 @@ const AdminService = {
     const url = `${this.baseUrl}/users/${userId}/delete`;
     return await http.delete(url);
   },
+
+  changePassword: async function (payload) {
+    const { users_id } = payload;
+    delete payload.users_id;
+    const url = `${this.baseUrl}/users/${users_id}/changePassword`;
+    return await http.put(url, payload);
+  },
 };
 
 export default AdminService;

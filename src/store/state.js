@@ -53,6 +53,7 @@ export const state = {
     auth: {
       user: user,
       loggedIn: !!user,
+      responseStatus: null
     },
     users: {
       error: false,
@@ -64,6 +65,9 @@ export const state = {
     profile: {
       activeMenuItem: activeMenuItem,
     },
+    admin: {
+      responseStatus: null,
+    },
   },
   featureNames: {},
   // product categories for filters
@@ -71,6 +75,7 @@ export const state = {
   selectedCategories: [],
   selectedStatus: [],
   reviewStatus: REVIEW_STATUS,
+  editedFeatureReviewId: null,
   selectedReviewStatusTab: {
     name: "Not Reviewed",
     id: "notReviewed",

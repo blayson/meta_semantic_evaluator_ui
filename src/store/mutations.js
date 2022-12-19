@@ -24,6 +24,10 @@ export const mutations = {
     }
   },
 
+  SAVE_EDITED_FEATURE_REVIEW_ID(state, payload) {
+    state.editedFeatureReviewId = payload;
+  },
+
   SAVE_RESPONSE(state, data) {
     state.status.reviews.response = data;
   },
@@ -64,6 +68,10 @@ export const mutations = {
     state.status[dataName].error = status;
   },
 
+  SAVE_RESPONSE_STATUS(state, dataName, status) {
+    state.status[dataName].responseStatus = status;
+  },
+
   SET_TAB(state, tab) {
     state.selectedReviewStatusTab = tab;
   },
@@ -80,11 +88,17 @@ export const mutations = {
     state.status.auth.loggedIn = false;
     state.status.auth.user = null;
   },
-  REGISTER_SUCCESS(state) {
+  REGISTER_SUCCESS(state, status) {
     state.status.auth.loggedIn = false;
+    state.status.auth.responseStatus = status;
   },
-  REGISTER_FAILURE(state) {
+  UPDATE_USER_SUCCESS(state, status) {
+    state.status.auth.responseStatus = status;
+  },
+
+  REGISTER_FAILURE(state, status) {
     state.status.auth.loggedIn = false;
+    state.status.auth.responseStatus = status;
   },
 
   SAVE_ALL_USERS(state, data) {

@@ -3,6 +3,9 @@ import CancelButtonCellRenderer from "@/components/cellRenderers/CancelButtonCel
 import ButtonAdminCellRenderer from "@/components/cellRenderers/admin/ButtonAdminCellRenderer";
 import ChangesAdminCellRenderer from "@/components/cellRenderers/admin/ChangesAdminCellRenderer";
 import AutocompleteSelectCellEditor from "ag-grid-autocomplete-editor";
+// import http from "@/services/api";
+import store from "@/store";
+import FeaturesService from "@/services/features.service";
 
 const getSentimentCol = function (tab) {
   const sentimentCol = {
@@ -68,7 +71,7 @@ const buttonCol = {
   cellRendererFramework: SuggestButtonCellRenderer,
 };
 
-export const getNotReviewedCols = (featureNames) => {
+export const getNotReviewedCols = () => {
   return [
     textCol,
     {
@@ -78,8 +81,20 @@ export const getNotReviewedCols = (featureNames) => {
       cellEditor: AutocompleteSelectCellEditor,
       cellEditorParams: {
         required: true,
-        selectData: featureNames,
-        placeholder: "Select an option",
+        autocomplete: {
+          fetch: async (cellEditor, text, update) => {
+            let match =
+              text.toLowerCase() || cellEditor.eInput.value.toLowerCase();
+            const response = await FeaturesService.getAllFeatureNamesByLang({
+              lang: "czech",
+              review_id: store.state.editedFeatureReviewId,
+              query: match,
+            });
+            let items = response.data.data;
+            update(items);
+          },
+        },
+        placeholder: "Select a feature",
       },
       valueFormatter: (params) => {
         if (params.value) {

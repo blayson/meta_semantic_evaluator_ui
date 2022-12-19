@@ -64,6 +64,15 @@ export const actions = {
     }
   },
 
+  async editSuggestion({ commit }, payload) {
+    try {
+      await SuggestionsService.editSuggestion(payload);
+    } catch (e) {
+      commit("SAVE_ERROR", "admin", true);
+      throw new Error(`API ${e}`);
+    }
+  },
+
   async submitSuggestions({ commit }, payload) {
     try {
       delete payload.index;
@@ -92,6 +101,7 @@ export const actions = {
       throw new Error(`API ${e}`);
     }
   },
+
   async approveSuggestion({ commit }, payload) {
     try {
       await AdminService.approveSuggestion(payload);
@@ -115,11 +125,12 @@ export const actions = {
   async register({ commit }, payload) {
     try {
       const response = await AuthService.register(payload);
-      commit("REGISTER_SUCCESS");
+      console.log(response.status);
+      commit("REGISTER_SUCCESS", response.status);
       return response;
     } catch (e) {
-      commit("REGISTER_FAILURE");
-      throw e;
+      commit("REGISTER_FAILURE", e.response.status);
+      // throw e;
     }
   },
 
@@ -141,9 +152,9 @@ export const actions = {
     }
   },
 
-  async loadFeatureNames({ commit }) {
+  async loadFeatureNames({ commit }, payload) {
     try {
-      let response = await FeaturesService.getAllFeatureNamesByLang();
+      let response = await FeaturesService.getAllFeatureNamesByLang(payload);
       commit("SAVE_FEATURE_NAMES", response.data.data);
     } catch (e) {
       commit("SAVE_ERROR", "features", true);
@@ -172,10 +183,21 @@ export const actions = {
       const users_id = data.users_id;
       delete data.users_id;
       delete data.register_language;
-      await AdminService.updateUser(users_id, data);
+      const response = await AdminService.updateUser(users_id, data);
+      commit("UPDATE_USER_SUCCESS", response.status);
     } catch (e) {
       commit("SAVE_ERROR", "admin", true);
       throw new Error(`API ${e}`);
+    }
+  },
+
+  async changePassword({ commit }, data) {
+    try {
+      const response = await AdminService.changePassword(data);
+      console.log(response.status);
+      commit("SAVE_RESPONSE_STATUS", "admin", response.status);
+    } catch (e) {
+      commit("SAVE_ERROR", "admin", true);
     }
   },
 

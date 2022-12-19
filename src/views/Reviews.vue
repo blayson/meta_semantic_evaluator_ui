@@ -1,5 +1,65 @@
 <template>
   <v-container fluid>
+    <v-dialog v-model="editDialog" max-width="500px">
+      <v-card>
+        <v-card-title>
+          <span class="text-h5"> Edit Changes </span>
+        </v-card-title>
+
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col cols="12" sm="8" md="6">
+                <v-text-field
+                  readonly
+                  v-model="editedChanges.feature.old_value"
+                  label="Feature old value"
+                >
+                </v-text-field>
+              </v-col>
+
+              <v-col cols="12" sm="8" md="6">
+                <v-text-field
+                  v-model="editedChanges.feature.new_value"
+                  label="Feature new value"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="8" md="6">
+                <v-text-field
+                  readonly
+                  v-model="editedChanges.sentiment.old_value"
+                  label="Sentiment old value"
+                >
+                </v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" md="4">
+                <v-select
+                  v-model="editedChanges.sentiment.new_value"
+                  label="Sentiment new value"
+                  :items="selectSentimentItems"
+                >
+                </v-select>
+              </v-col>
+            </v-row>
+            <v-row>
+              <p v-if="editedDialogErrors" style="color: red">
+                {{ editedDialogErrors }}
+              </p>
+            </v-row>
+          </v-container>
+        </v-card-text>
+
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="closeEditDialog">
+            Cancel
+          </v-btn>
+          <v-btn color="blue darken-1" text @click="saveEditDialog">
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-row no-gutters>
       <v-col md="2">
         <ReviewFilters
@@ -32,7 +92,6 @@
                   {{ item.name }}
                 </v-tab>
               </v-tabs>
-
             </v-col>
           </v-row>
           <v-row>
@@ -131,6 +190,11 @@ export default {
       return this.$store.state.status.auth.user;
     },
   },
+  watch: {
+    editDialog(val) {
+      val || this.closeEditDialog();
+    },
+  },
 
   data() {
     return {
@@ -208,6 +272,30 @@ export default {
       timeout: 2000,
       text: "",
       done: true,
+      editDialog: false,
+      editedChanges: {
+        sentiment: {
+          new_value: "",
+          old_value: "",
+        },
+        feature: {
+          new_value: "",
+          old_value: "",
+        },
+      },
+      defaultChanges: {
+        sentiment: {
+          new_value: "",
+          old_value: "",
+        },
+        feature: {
+          new_value: "",
+          old_value: "",
+        },
+      },
+      editedReviewSuggestionId: null,
+      selectSentimentItems: ["positive", "negative"],
+      editedDialogErrors: null,
     };
   },
 
@@ -224,6 +312,43 @@ export default {
       this.done = done;
       this.text = text;
       this.snackbar = true;
+    },
+
+    showEditDialog(reviewSuggestionId) {
+      const changes = this.$store.getters.getSuggestionById(reviewSuggestionId);
+      this.editedChanges = Object.assign({}, changes);
+      this.editedReviewSuggestionId = reviewSuggestionId;
+      this.editDialog = true;
+    },
+
+    closeEditDialog() {
+      this.editDialog = false;
+      this.editedReviewSuggestionId = null;
+      this.$nextTick(() => {
+        this.editedChanges = Object.assign({}, this.defaultChanges);
+      });
+    },
+
+    async saveEditDialog() {
+      let payload = {
+        reviewSuggestionId: this.editedReviewSuggestionId,
+        feature: {
+          newValue:
+            this.editedChanges.feature.new_value ||
+            this.editedChanges.feature.old_value,
+          oldValue: this.editedChanges.feature.old_value,
+          initialValue: this.editedChanges.feature.old_value,
+        },
+        sentiment: {
+          newValue:
+            this.editedChanges.sentiment.new_value ||
+            this.editedChanges.feature.old_value,
+          oldValue: this.editedChanges.sentiment.old_value,
+          initialValue: this.editedChanges.sentiment.old_value,
+        },
+      };
+      await this.$store.dispatch("editSuggestion", payload);
+      this.closeEditDialog();
     },
 
     isUserAdmin() {
@@ -287,8 +412,7 @@ export default {
     getColDefs() {
       switch (this.selectedReviewStatusTab.id) {
         case "notReviewed": {
-          // console.log(this.featureNames);
-          return getNotReviewedCols(this.featureNames);
+          return getNotReviewedCols();
         }
         case "reviewed": {
           return REVIEWED_COLS;
@@ -450,8 +574,12 @@ export default {
     };
 
     this.gridOptions = {
+      onCellEditingStarted: function (event) {
+        const reviews_id = event.node.data.id.split("|")[0];
+        commit("SAVE_EDITED_FEATURE_REVIEW_ID", reviews_id);
+      },
+
       onCellEditingStopped: function (event) {
-        console.log("cellEditingStopped");
         let notUpdatedVal = null;
         const colId = event.column.getId();
 

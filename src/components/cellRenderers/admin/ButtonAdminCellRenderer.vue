@@ -5,6 +5,15 @@
     </div>
     <div v-else>
       <v-btn
+        @click="editSuggestion()"
+        color="primary"
+        small
+        icon
+        plain
+        style="margin-left: 5px"
+        ><v-icon>mdi-pencil</v-icon></v-btn
+      >
+      <v-btn
         @click="approveSuggestion()"
         color="primary"
         small
@@ -59,6 +68,14 @@ export default Vue.extend({
         `Approved suggestion with id: ${this.cellValue}`,
         true
       );
+    },
+
+    async editSuggestion() {
+      this.params.context.componentParent.showEditDialog(
+        this.cellValue,
+      );
+      await this.params.api.refreshInfiniteCache();
+
     },
 
     // gets called whenever the user gets the cell to refresh

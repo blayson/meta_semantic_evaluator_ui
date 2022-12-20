@@ -13,7 +13,7 @@ export const getters = {
   getSuggestionById: (state) => (dataId) => {
     for (const data of state.status.reviews.data) {
       if (dataId === data.reviews_suggestions_id) {
-        return data.changes;
+        return { changes: data.changes, reviewsId: data.reviews_id };
       }
     }
   },

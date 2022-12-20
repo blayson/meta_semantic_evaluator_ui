@@ -71,11 +71,8 @@ export default Vue.extend({
     },
 
     async editSuggestion() {
-      this.params.context.componentParent.showEditDialog(
-        this.cellValue,
-      );
+      this.params.context.componentParent.showEditDialog(this.cellValue);
       await this.params.api.refreshInfiniteCache();
-
     },
 
     // gets called whenever the user gets the cell to refresh

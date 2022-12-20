@@ -342,7 +342,6 @@ export default {
         {
           name: "Personal info",
           icon: "mdi-account",
-          // active: false,
         },
         {
           name: "Users management",

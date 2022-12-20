@@ -294,6 +294,7 @@ export default {
         },
       },
       editedReviewSuggestionId: null,
+      editedReviewsId: null,
       selectSentimentItems: ["positive", "negative"],
       editedDialogErrors: null,
     };
@@ -315,40 +316,40 @@ export default {
     },
 
     showEditDialog(reviewSuggestionId) {
-      const changes = this.$store.getters.getSuggestionById(reviewSuggestionId);
+      const { changes, reviewsId } =
+        this.$store.getters.getSuggestionById(reviewSuggestionId);
       this.editedChanges = Object.assign({}, changes);
       this.editedReviewSuggestionId = reviewSuggestionId;
+      this.editedReviewsId = reviewsId;
       this.editDialog = true;
     },
 
-    closeEditDialog() {
+    async closeEditDialog() {
       this.editDialog = false;
       this.editedReviewSuggestionId = null;
-      this.$nextTick(() => {
+      this.$nextTick(async () => {
         this.editedChanges = Object.assign({}, this.defaultChanges);
+        await this.gridApi.refreshInfiniteCache();
       });
     },
 
     async saveEditDialog() {
       let payload = {
+        reviews_id: this.editedReviewsId,
         reviewSuggestionId: this.editedReviewSuggestionId,
         feature: {
-          newValue:
-            this.editedChanges.feature.new_value ||
-            this.editedChanges.feature.old_value,
+          newValue: this.editedChanges.feature.new_value,
           oldValue: this.editedChanges.feature.old_value,
           initialValue: this.editedChanges.feature.old_value,
         },
         sentiment: {
-          newValue:
-            this.editedChanges.sentiment.new_value ||
-            this.editedChanges.feature.old_value,
+          newValue: this.editedChanges.sentiment.new_value,
           oldValue: this.editedChanges.sentiment.old_value,
           initialValue: this.editedChanges.sentiment.old_value,
         },
       };
       await this.$store.dispatch("editSuggestion", payload);
-      this.closeEditDialog();
+      await this.closeEditDialog();
     },
 
     isUserAdmin() {

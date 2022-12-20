@@ -15,6 +15,7 @@ const SuggestionsService = {
 
   editSuggestion: async function (payload) {
     const url = `${this.baseUrl}/${payload.reviewSuggestionId}/edit`;
+    delete payload.reviewSuggestionId;
     return await http.put(url, payload);
   },
 };

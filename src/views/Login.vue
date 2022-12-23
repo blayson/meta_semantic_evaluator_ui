@@ -139,7 +139,7 @@ export default {
           await this.$router.push({ name: "Reviews" });
         }
       } catch (e) {
-        if (e.response.status === 400 || e.response.status === 404) {
+        if (e.response.status === 400 || e.response.status === 403 || e.response.status === 404) {
           this.error = "User does not exist with this password and email";
         } else if (e.response.status === 401 || e.response.status === 422) {
           this.error = e.response.data.detail || "Incorrect email or password";

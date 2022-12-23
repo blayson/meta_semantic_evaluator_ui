@@ -214,7 +214,7 @@ export const ADMIN_COLS = [
     maxWidth: 110,
     minWidth: 100,
     valueGetter: "node.id",
-    headerName: "Approve",
+    headerName: "Actions",
     colId: "button",
     editable: false,
     pinned: "right",

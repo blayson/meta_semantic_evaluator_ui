@@ -143,6 +143,8 @@ export default {
           this.error = "User does not exist with this password and email";
         } else if (e.response.status === 401 || e.response.status === 422) {
           this.error = e.response.data.detail || "Incorrect email or password";
+        } else {
+          this.error = "Something bad happened, please try again later"
         }
       }
     },

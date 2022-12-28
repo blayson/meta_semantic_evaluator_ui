@@ -43,7 +43,7 @@
     "vuetify-loader": "^1.7.0"
   },
   "engines": {
-    "node": "18.x",
+    "node": "19.x",
     "npm": "9.x"
   }
 }

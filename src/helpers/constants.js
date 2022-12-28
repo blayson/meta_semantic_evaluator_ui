@@ -1,4 +1,4 @@
-export const API_URL = "http://localhost:8000/api/v1";
+export const API_URL = "https://sre-api.herokuapp.com/api/v1";
 
 export const SRE_TOKEN = "sre_token";
 
